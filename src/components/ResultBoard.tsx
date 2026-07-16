@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import type { DgTchekResult } from "../lib/core";
+
+interface MinimalResult {
+  common: string[];
+  pick3: string[];
+  pick4: string[];
+}
 
 function useCopy(): [boolean, (text: string) => void] {
   const [copied, setCopied] = useState(false);
@@ -32,7 +37,7 @@ function ComboChip({ value }: { value: string }) {
   );
 }
 
-export default function ResultBoard({ result }: { result: DgTchekResult }) {
+export default function ResultBoard({ result }: { result: MinimalResult }) {
   const [tab, setTab] = useState<"3" | "4">("3");
   const [copiedCommon, copyCommon] = useCopy();
   const [copiedCombo, copyCombo] = useCopy();

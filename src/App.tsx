@@ -5,7 +5,7 @@ import SuperPickForm from "./components/SuperPickForm";
 import SuperPickResults from "./components/SuperPickResults";
 import RecentSearches from "./components/RecentSearches";
 import AdminPanel from "./components/AdminPanel";
-import { runDGTchek, type DgTchekResult } from "./lib/core";
+import { runDGTchek, runSuperPick, type DgTchekResult, type SuperPickResult } from "./lib/core";
 import { buildDatabase } from "./lib/database";
 import { addRecent, clearRecents, loadRecents, type RecentSearch } from "./lib/recents";
 import dgAvatar from "./assets/dg-avatar.png";
@@ -15,7 +15,7 @@ type View = "checker" | "admin";
 export default function App() {
   const [dbInfo, setDbInfo] = useState(() => buildDatabase());
   const [result, setResult] = useState<DgTchekResult | null>(null);
-  const [superResults, setSuperResults] = useState<[DgTchekResult, DgTchekResult] | null>(null);
+  const [superResult, setSuperResult] = useState<SuperPickResult | null>(null);
   const [recents, setRecents] = useState<RecentSearch[]>(() => loadRecents());
   const [view, setView] = useState<View>("checker");
 
@@ -40,11 +40,10 @@ export default function App() {
   }
 
   function handleSuperAnalyze(pair1: [string, string], pair2: [string, string]) {
-    const res1 = runDGTchek(pair1[0], pair1[1], dbInfo.db);
-    const res2 = runDGTchek(pair2[0], pair2[1], dbInfo.db);
-    setSuperResults([res1, res2]);
-    let r = addRecent(pair1[0], pair1[1], res1.common.length);
-    r = addRecent(pair2[0], pair2[1], res2.common.length);
+    const res = runSuperPick(pair1, pair2, dbInfo.db);
+    setSuperResult(res);
+    let r = addRecent(pair1[0], pair1[1], res.common1.length);
+    r = addRecent(pair2[0], pair2[1], res.common2.length);
     setRecents(r);
   }
 
@@ -53,7 +52,7 @@ export default function App() {
   }
 
   function handleSuperClear() {
-    setSuperResults(null);
+    setSuperResult(null);
   }
 
   function handleClearRecents() {
@@ -65,11 +64,8 @@ export default function App() {
     const fresh = buildDatabase();
     setDbInfo(fresh);
     if (result) setResult(runDGTchek(result.input1, result.input2, fresh.db));
-    if (superResults) {
-      setSuperResults([
-        runDGTchek(superResults[0].input1, superResults[0].input2, fresh.db),
-        runDGTchek(superResults[1].input1, superResults[1].input2, fresh.db),
-      ]);
+    if (superResult) {
+      setSuperResult(runSuperPick(superResult.pair1, superResult.pair2, fresh.db));
     }
   }
 
@@ -128,9 +124,9 @@ export default function App() {
             {/* Super Pick lives right here on the same page — no navigation */}
             <div className="mt-2 border-t border-dashed border-line pt-6">
               <SuperPickForm onSubmit={handleSuperAnalyze} onClear={handleSuperClear} />
-              {superResults && (
+              {superResult && (
                 <div className="mt-6">
-                  <SuperPickResults result1={superResults[0]} result2={superResults[1]} />
+                  <SuperPickResults result={superResult} />
                 </div>
               )}
             </div>

@@ -1,33 +1,35 @@
-import type { DgTchekResult } from "../lib/core";
+import type { SuperPickResult } from "../lib/core";
 import ResultBoard from "./ResultBoard";
 
 interface Props {
-  result1: DgTchekResult;
-  result2: DgTchekResult;
+  result: SuperPickResult;
 }
 
-function Labeled({ result, index }: { result: DgTchekResult; index: number }) {
+export default function SuperPickResults({ result }: Props) {
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-red text-[11px] font-black text-white">
-          {index}
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col items-center gap-1 text-center">
+        <span className="font-num text-xs uppercase tracking-widest text-mute">Konbine</span>
+        <span className="font-num text-sm font-bold text-paper">
+          {result.pair1[0]} <span className="text-mute">vs</span> {result.pair1[1]}
+          <span className="mx-2 text-gold">∩</span>
+          {result.pair2[0]} <span className="text-mute">vs</span> {result.pair2[1]}
         </span>
-        <span className="font-num text-sm font-bold uppercase tracking-widest text-paper">
-          {result.input1} <span className="text-mute">vs</span> {result.input2}
+        <span className="text-[11px] text-line-bright">
+          Boul Komen: {result.common1.join(",") || "—"} &nbsp;∩&nbsp; {result.common2.join(",") || "—"}
         </span>
       </div>
-      <ResultBoard result={result} />
-    </div>
-  );
-}
 
-export default function SuperPickResults({ result1, result2 }: Props) {
-  return (
-    <div className="flex flex-col gap-8">
-      <Labeled result={result1} index={1} />
-      <div className="h-px bg-line" />
-      <Labeled result={result2} index={2} />
+      {result.common.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-line px-5 py-8 text-center">
+          <span className="mb-2 block text-2xl">🔍</span>
+          <p className="text-sm text-mute">
+            Pa gen boul ki komen ant 2 konparezon yo. Sa nòmal — 2 pè diferan pa toujou gen menm boul.
+          </p>
+        </div>
+      ) : (
+        <ResultBoard result={result} />
+      )}
     </div>
   );
 }

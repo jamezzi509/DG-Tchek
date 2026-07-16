@@ -174,6 +174,38 @@ function pairsDoublesLast(common: Pair[]): [Pair, Pair][] {
   return [...withoutDouble, ...withDouble];
 }
 
+/** Generates the deduped Pick 3 and Pick 4 lists for a set of common numbers. */
+export function computePicksFromCommon(common: Pair[]): { pick3: string[]; pick4: string[] } {
+  const p3: string[] = [];
+  const p4: string[] = [];
+  for (const [A, B] of pairsDoublesLast(common)) {
+    p3.push(...generatePick3(A, B));
+    p4.push(...generatePick4(A, B));
+  }
+  return { pick3: dedupePreserveOrder(p3), pick4: dedupePreserveOrder(p4) };
+}
+
+/**
+ * Super Pick's "combine 4 numbers into one result" rule: given the Common
+ * list from two separate pair comparisons, keep only the numbers that show
+ * up as common in BOTH — using the mirror rule for the cross-check too, so
+ * a number from pair A's common list still counts if pair B's common list
+ * has its mirror instead of the exact same digits.
+ */
+export function combineCommonIntersection(commonA: Pair[], commonB: Pair[]): Pair[] {
+  const result: Pair[] = [];
+  const seen = new Set<string>();
+  for (const a of commonA) {
+    if (seen.has(a) || seen.has(reversePair(a))) continue;
+    const hit = commonB.some((b) => isMirrorMatch(a, b));
+    if (hit) {
+      seen.add(a);
+      result.push(a);
+    }
+  }
+  return result;
+}
+
 /** Parses free-text input like "45 55" into two validated 2-digit pairs. */
 export function parseInput(raw: string): { ok: true; a: Pair; b: Pair } | { ok: false; error: string } {
   const parts = raw.trim().split(/\s+/).filter(Boolean).map(normalizePair);
@@ -206,23 +238,39 @@ export function runDGTchek(input1: Pair, input2: Pair, db: Database): DgTchekRes
   const list2 = db[input2] ?? [];
   const rawCommon = findCommonNumbers(list1, list2);
   const common = orderCommonDoublesLast(rawCommon);
+  const { pick3, pick4 } = computePicksFromCommon(rawCommon);
 
-  const p3: string[] = [];
-  const p4: string[] = [];
-  for (const [A, B] of pairsDoublesLast(rawCommon)) {
-    p3.push(...generatePick3(A, B));
-    p4.push(...generatePick4(A, B));
-  }
+  return { input1, input2, list1, list2, common, pick3, pick4 };
+}
 
-  return {
-    input1,
-    input2,
-    list1,
-    list2,
-    common,
-    pick3: dedupePreserveOrder(p3),
-    pick4: dedupePreserveOrder(p4),
-  };
+export interface SuperPickResult {
+  pair1: [Pair, Pair];
+  pair2: [Pair, Pair];
+  common1: Pair[]; // pair1's own Common list, for context
+  common2: Pair[]; // pair2's own Common list, for context
+  common: Pair[]; // the two Common lists intersected — this is the combined result
+  pick3: string[];
+  pick4: string[];
+}
+
+/**
+ * Super Pick: runs two ordinary comparisons, then keeps only the numbers
+ * that came up Common in BOTH (mirror-aware), and generates Pick 3/Pick 4
+ * from that intersection. Often empty — that's expected, not a bug, since
+ * it only takes two unrelated pairs sharing very little in common.
+ */
+export function runSuperPick(
+  pair1: [Pair, Pair],
+  pair2: [Pair, Pair],
+  db: Database
+): SuperPickResult {
+  const r1 = runDGTchek(pair1[0], pair1[1], db);
+  const r2 = runDGTchek(pair2[0], pair2[1], db);
+  const rawCombined = combineCommonIntersection(r1.common, r2.common);
+  const common = orderCommonDoublesLast(rawCombined);
+  const { pick3, pick4 } = computePicksFromCommon(rawCombined);
+
+  return { pair1, pair2, common1: r1.common, common2: r2.common, common, pick3, pick4 };
 }
 
 /** Formats a result into the clean, copy-friendly block the spec asks for. */
