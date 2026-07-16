@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import BallInput from "./BallInput";
 import { isValidPair, normalizePair } from "../lib/core";
 
@@ -12,37 +12,49 @@ export default function CompareForm({ onSubmit, onClear }: Props) {
   const [b, setB] = useState("");
   const [error, setError] = useState<string | null>(null);
   const inputBRef = useRef<HTMLInputElement>(null);
+  const lastSubmitted = useRef<string>("");
 
   function handleSwap() {
     setA(b);
     setB(a);
   }
 
-  function trySubmit(valA: string, valB: string) {
-    const na = normalizePair(valA);
-    const nb = normalizePair(valB);
+  function trySubmit(e?: FormEvent) {
+    e?.preventDefault();
+    const na = normalizePair(a);
+    const nb = normalizePair(b);
     if (!isValidPair(na) || !isValidPair(nb)) {
       setError("Antre de nimewo 2 chif, egzanp 45 ak 55.");
       return;
     }
     setError(null);
+    lastSubmitted.current = `${na}-${nb}`;
     onSubmit(na, nb);
   }
 
-  function handleSubmit(e?: FormEvent) {
-    e?.preventDefault();
-    trySubmit(a, b);
-  }
+  // Auto-submit once both fields are simultaneously valid, reading committed
+  // state (not a mid-keystroke closure) so fast/mobile typing can't race it.
+  useEffect(() => {
+    const na = normalizePair(a);
+    const nb = normalizePair(b);
+    if (isValidPair(na) && isValidPair(nb) && `${na}-${nb}` !== lastSubmitted.current) {
+      setError(null);
+      lastSubmitted.current = `${na}-${nb}`;
+      onSubmit(na, nb);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [a, b]);
 
   function handleClear() {
     setA("");
     setB("");
     setError(null);
+    lastSubmitted.current = "";
     onClear();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={trySubmit} className="flex flex-col gap-4">
       <div className="flex items-center justify-center gap-2">
         <span className="h-px flex-1 bg-line" />
         <span className="flex items-center gap-2 font-num text-sm font-bold uppercase tracking-[0.2em] text-paper">
@@ -60,7 +72,7 @@ export default function CompareForm({ onSubmit, onClear }: Props) {
               setA(v);
               if (error) setError(null);
             }}
-            onComplete={() => inputBRef.current?.focus()}
+            onComplete={() => setTimeout(() => inputBRef.current?.focus(), 0)}
             autoFocus
           />
         </div>
@@ -86,7 +98,6 @@ export default function CompareForm({ onSubmit, onClear }: Props) {
               setB(v);
               if (error) setError(null);
             }}
-            onComplete={(val) => trySubmit(a, val)}
           />
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import BallInput from "./BallInput";
 import { isValidPair, normalizePair } from "../lib/core";
 
@@ -35,25 +35,39 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
   const b1Ref = useRef<HTMLInputElement>(null);
   const a2Ref = useRef<HTMLInputElement>(null);
   const b2Ref = useRef<HTMLInputElement>(null);
+  const lastSubmitted = useRef<string>("");
 
   function clearError() {
     if (error) setError(null);
   }
 
-  function trySubmit(valA1: string, valB1: string, valA2: string, valB2: string) {
-    const n = [valA1, valB1, valA2, valB2].map(normalizePair);
+  function trySubmit(e?: FormEvent) {
+    e?.preventDefault();
+    const n = [a1, b1, a2, b2].map(normalizePair);
+    const key = n.join("-");
     if (!n.every(isValidPair)) {
       setError("Antre 4 nimewo 2 chif, egzanp 66, 36, 47, 77.");
       return;
     }
     setError(null);
+    lastSubmitted.current = key;
     onSubmit([n[0], n[1]], [n[2], n[3]]);
   }
 
-  function handleSubmit(e?: FormEvent) {
-    e?.preventDefault();
-    trySubmit(a1, b1, a2, b2);
-  }
+  // Auto-submit once all 4 fields are simultaneously valid, reading
+  // committed state rather than a mid-keystroke closure — avoids the
+  // race where fast typing across 4 auto-advancing boxes could submit
+  // with a stale value for an earlier field.
+  useEffect(() => {
+    const n = [a1, b1, a2, b2].map(normalizePair);
+    const key = n.join("-");
+    if (n.every(isValidPair) && key !== lastSubmitted.current) {
+      setError(null);
+      lastSubmitted.current = key;
+      onSubmit([n[0], n[1]], [n[2], n[3]]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [a1, b1, a2, b2]);
 
   function handleClear() {
     setA1("");
@@ -61,11 +75,12 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
     setA2("");
     setB2("");
     setError(null);
+    lastSubmitted.current = "";
     onClear();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+    <form onSubmit={trySubmit} className="flex flex-col gap-5">
       <div className="flex items-center justify-center gap-2">
         <span className="h-px flex-1 bg-line" />
         <span className="flex items-center gap-2 font-num text-sm font-bold uppercase tracking-[0.2em] text-paper">
@@ -85,8 +100,7 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
               setA1(v);
               clearError();
             }}
-            onComplete={() => b1Ref.current?.focus()}
-            autoFocus
+            onComplete={() => setTimeout(() => b1Ref.current?.focus(), 0)}
           />
         </div>
         <SwapButton
@@ -104,7 +118,7 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
               setB1(v);
               clearError();
             }}
-            onComplete={() => a2Ref.current?.focus()}
+            onComplete={() => setTimeout(() => a2Ref.current?.focus(), 0)}
           />
         </div>
       </div>
@@ -120,7 +134,7 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
               setA2(v);
               clearError();
             }}
-            onComplete={() => b2Ref.current?.focus()}
+            onComplete={() => setTimeout(() => b2Ref.current?.focus(), 0)}
           />
         </div>
         <SwapButton
@@ -138,7 +152,6 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
               setB2(v);
               clearError();
             }}
-            onComplete={(val) => trySubmit(a1, b1, a2, val)}
           />
         </div>
       </div>
