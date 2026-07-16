@@ -32,9 +32,12 @@ export default function CompareForm({ onSubmit, onClear }: Props) {
     onSubmit(na, nb);
   }
 
-  // Auto-submit once both fields are simultaneously valid, reading committed
-  // state (not a mid-keystroke closure) so fast/mobile typing can't race it.
+  // Auto-submit once both fields are *fully typed* (2 raw digits each —
+  // checking isValidPair(normalizePair(x)) was the bug: normalizePair pads
+  // a single digit like "3" into "03", which then reads as valid and can
+  // fire mid-keystroke on a half-typed value).
   useEffect(() => {
+    if (a.length !== 2 || b.length !== 2) return;
     const na = normalizePair(a);
     const nb = normalizePair(b);
     if (isValidPair(na) && isValidPair(nb) && `${na}-${nb}` !== lastSubmitted.current) {

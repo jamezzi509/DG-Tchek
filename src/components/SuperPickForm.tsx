@@ -54,11 +54,13 @@ export default function SuperPickForm({ onSubmit, onClear }: Props) {
     onSubmit([n[0], n[1]], [n[2], n[3]]);
   }
 
-  // Auto-submit once all 4 fields are simultaneously valid, reading
-  // committed state rather than a mid-keystroke closure — avoids the
-  // race where fast typing across 4 auto-advancing boxes could submit
-  // with a stale value for an earlier field.
+  // Auto-submit once all 4 fields are simultaneously *fully typed* (2 raw
+  // digits each — checking isValidPair(normalizePair(x)) here was the bug:
+  // normalizePair pads a single digit like "3" into "03", which then reads
+  // as "valid," letting this fire mid-keystroke with a half-typed value).
   useEffect(() => {
+    const allComplete = [a1, b1, a2, b2].every((v) => v.length === 2);
+    if (!allComplete) return;
     const n = [a1, b1, a2, b2].map(normalizePair);
     const key = n.join("-");
     if (n.every(isValidPair) && key !== lastSubmitted.current) {
