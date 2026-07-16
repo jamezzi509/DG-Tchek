@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-ink: #050505;
+  --color-panel: #111111;
+  --color-panel-raised: #171717;
+  --color-line: #2a2a2a;
+  --color-line-bright: #3f3f3f;
+  --color-paper: #f5f5f5;
+  --color-mute: #8f8f8f;
+  --color-red: #e51c2b;
+  --color-red-dim: #9c1620;
+  --color-gold: #d4af37;
+  --color-gold-dim: #a3852a;
+  --color-teal: #33cbb0;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(229, 28, 43, 0.10), transparent 45%),
+      radial-gradient(circle at 90% 20%, rgba(212, 175, 55, 0.05), transparent 40%);
+    background-attachment: fixed;
+  }
+  ::selection {
+    background: var(--color-red);
+    color: var(--color-paper);
+  }
+}
+
+@layer utilities {
+  .font-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+  .ticket-edge {
+    position: relative;
+  }
+  .ticket-edge::before,
+  .ticket-edge::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    background: var(--color-ink);
+    border-radius: 999px;
+    transform: translateY(-50%);
+  }
+  .ticket-edge::before {
+    left: -7px;
+  }
+  .ticket-edge::after {
+    right: -7px;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-bright) transparent;
+  }
+  .text-glow-red {
+    text-shadow: 0 0 20px rgba(229, 28, 43, 0.5);
+  }
+}
+
