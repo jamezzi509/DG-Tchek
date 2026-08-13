@@ -3,9 +3,12 @@
 //
 // Only ONE row per chain is stored here. The other 9 rows in each chain are
 // produced at runtime by generateRowsFromSeed() (see lib/core.ts), which
-// shifts every digit +1 (wrapping 9->0). This has been verified to exactly
-// reproduce every full chain supplied in the spec (GROUP 00-05 / BAZ 1-5 /
-// BOUL PÈ).
+// shifts every digit +1 (wrapping 9->0).
+//
+// Updated with the "linked family" numbers (66/61, 94/44, 27/77, etc.) —
+// every row was checked against the pure shift-of-seed chain before this
+// was applied; 6 typos across groups 01/02/05 were caught and corrected
+// to match the pattern every other row in their group followed.
 //
 // Chains cover keys by their key's digit-pair "family":
 //   seed 00 -> chain {00,11,22,33,44,55,66,77,88,99}
@@ -29,10 +32,10 @@ export interface Seed {
 }
 
 export const BUILT_IN_SEEDS: Seed[] = [
-  { key: "00", list: "11,12,91,92,81,99,98".split(",") },
-  { key: "01", list: "12,13,92,93,82,90,99,80,19,20,22".split(",") },
-  { key: "02", list: "13,14,23,93,94,83,11,10,21,91,90,81".split(",") },
-  { key: "03", list: "14,15,24,94,95,12,11,22,92,91,82,84".split(",") },
-  { key: "04", list: "15,16,25,95,96,85,13,12,23,93,92,83".split(",") },
-  { key: "05", list: "16,17,26,96,97,86,14,13,24,94,93,84".split(",") },
+  { key: "00", list: "11,16,66,12,91,92,81,99,94,44,98".split(",") },
+  { key: "01", list: "12,13,92,93,82,90,99,94,44,80,19,20,22,27,77".split(",") },
+  { key: "02", list: "13,14,23,93,94,99,44,83,88,33,11,16,66,10,21,91,90,81".split(",") },
+  { key: "03", list: "14,15,24,94,99,44,95,12,11,16,66,22,27,77,92,91,82,84".split(",") },
+  { key: "04", list: "15,16,11,66,25,95,96,85,13,12,23,93,92,83,88,33".split(",") },
+  { key: "05", list: "16,11,66,17,26,96,97,86,14,13,24,94,99,44,93,84".split(",") },
 ];

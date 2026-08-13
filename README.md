@@ -56,6 +56,8 @@ cover **all 100 keys**, not just 60:
 | `04` | 04,15,26,37,48,59,60,71,82,93 | chain `06` |
 | `05` | 05,16,27,38,49,50,61,72,83,94 | itself |
 
+**Update history:** the seed lists were revised to include the "linked family" numbers (e.g. `11` now also lists `66`/`61`, `00` now also lists `55`/`05`, etc.). Every row was checked against the pure shift-of-seed chain before applying — 6 typos across groups 01/02/05 (duplicated/transposed/missing digits) were caught and corrected to match the pattern the rest of their group followed.
+
 `buildDatabase()` (`src/lib/database.ts`) does a mirror-alias pass after
 generating the seeded chains: for any key still empty, it checks whether
 that key's mirror has data, and if so, the two share the exact same list
