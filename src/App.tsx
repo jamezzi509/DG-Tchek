@@ -5,6 +5,8 @@ import SuperPickForm from "./components/SuperPickForm";
 import SuperPickResults from "./components/SuperPickResults";
 import RecentSearches from "./components/RecentSearches";
 import AdminPanel from "./components/AdminPanel";
+import WorkoutPanel from "./components/WorkoutPanel";
+import AutomaticPanel from "./components/AutomaticPanel";
 import { runDGTchek, runSuperPick, type DgTchekResult, type SuperPickResult } from "./lib/core";
 import { buildDatabase } from "./lib/database";
 import { addRecent, clearRecents, loadRecents, type RecentSearch } from "./lib/recents";
@@ -23,8 +25,8 @@ export default function App() {
     function handleKey(e: KeyboardEvent) {
       if (
         e.key === "Enter" &&
-        document.activeElement?.tagName !== "INPUT" &&
-        document.activeElement?.tagName !== "TEXTAREA"
+        !e.defaultPrevented &&
+        document.activeElement === document.body
       ) {
         document.getElementById("dgt-input-a")?.focus();
       }
@@ -110,6 +112,7 @@ export default function App() {
 
         {view === "checker" ? (
           <div className="flex flex-col gap-6">
+            <AutomaticPanel db={dbInfo.db} onCompare={handleAnalyze} />
             <CompareForm onSubmit={handleAnalyze} onClear={handleClear} />
             <RecentSearches recents={recents} onSelect={handleAnalyze} onClear={handleClearRecents} />
             {result ? (
@@ -120,6 +123,8 @@ export default function App() {
                 <p className="text-sm text-mute">Antre 2 boul pou konpare.</p>
               </div>
             )}
+
+            <WorkoutPanel tchek={result} />
 
             {/* Super Pick lives right here on the same page — no navigation */}
             <div className="mt-2 border-t border-dashed border-line pt-6">

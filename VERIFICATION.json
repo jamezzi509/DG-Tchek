@@ -1,0 +1,36 @@
+{
+  "date": "2026-09-22",
+  "build": "passed",
+  "unit_and_component_tests": 215,
+  "test_files": 5,
+  "gyd_reference_cases": 196,
+  "pyramid_reference_dates": 1461,
+  "unchanged_live_tchek_comparisons": 450,
+  "lint": "passed without warnings after excluding generated dev-dist",
+  "browser": {
+    "loaded": true,
+    "error_overlay": false,
+    "uncaught_errors_reported": false,
+    "mobile_width": 390,
+    "document_width": 390,
+    "flows": [
+      "25+28 returns 36 37 16 17",
+      "September 16 pyramid overlap 16/61 and 17/71",
+      "58/54/73 GYD overlap 36/63",
+      "25/11/13 GYD raw outputs 87 77 78 88 57 75 58 85",
+      "date change resets GYD inputs"
+    ]
+  },
+  "deployment": "Local integration verified; GitHub/Vercel publication pending",
+  "display_update": "One representative per reversal family on screen and copied lists; reverse matching retained. 209 tests, production build and lint pass.",
+  "automatic_integration": {
+    "read_only_sqlite": true,
+    "latest_verified": "2026-09-22 FL midday 964 / 2855",
+    "historical_reverse_hit": "2026-09-21 evening: comparison 16+17 matched 50 (via 05) and 08",
+    "mobile_width": 390,
+    "document_width": 390,
+    "cors_unrelated_origin": 403,
+    "invalid_state": 400,
+    "launcher_syntax": "passed"
+  }
+}
