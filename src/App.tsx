@@ -5,6 +5,7 @@ import SuperPickForm from "./components/SuperPickForm";
 import SuperPickResults from "./components/SuperPickResults";
 import RecentSearches from "./components/RecentSearches";
 import AdminPanel from "./components/AdminPanel";
+import GydManualPanel from "./components/GydManualPanel";
 import WorkoutPanel from "./components/WorkoutPanel";
 import AutomaticPanel from "./components/AutomaticPanel";
 import { runDGTchek, runSuperPick, type DgTchekResult, type SuperPickResult } from "./lib/core";
@@ -133,6 +134,7 @@ export default function App() {
               )}
             </div>
 
+            <GydManualPanel />
             <AutomaticPanel db={dbInfo.db} onCompare={handleAnalyze} />
             <WorkoutPanel tchek={result} />
           </div>
