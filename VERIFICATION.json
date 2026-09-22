@@ -1,8 +1,8 @@
 {
   "date": "2026-09-22",
   "build": "passed",
-  "unit_and_component_tests": 217,
-  "test_files": 5,
+  "unit_and_component_tests": 220,
+  "test_files": 6,
   "gyd_reference_cases": 196,
   "pyramid_reference_dates": 1461,
   "unchanged_live_tchek_comparisons": 450,
@@ -44,5 +44,11 @@
       "RDPRI"
     ],
     "haiti_browser": "2026-09-22 17:30 target; source 10:30 and 11:30; direct prizes; 4 comparisons"
+  },
+  "gyd_backtest": {
+    "rule": "previous calendar day, same session, all GYD families against 3 prizes",
+    "verified": "Florida evening September 1–21, 2026: 2/21 hits, 19 misses, 0 pending",
+    "mobile_width": 390,
+    "document_width": 390
   }
 }

@@ -1,3 +1,4 @@
+import GydBacktestPanel from "./GydBacktestPanel";
 import { useEffect, useRef, useState } from "react";
 import { gydFloridaSignals, scanOldWorkout, sessionRank } from "../lib/automatic-checks";
 import { drawLabel, drawPrizes, expectedSources, parseEngineFeed, type EngineLottery, type EngineDraw, type SourceStream } from "../lib/engine-feed";
@@ -80,7 +81,7 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const pyramid=valid?calculatePyramid(day):null;
   const latest=draws.at(-1);
   const actual=draws.find(d=>d.date===day && d.session===session);
-  return <section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
+  return <><section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
     <h2 id="auto-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper"><span className="text-gold">◆</span> Tchek otomatik</h2>
     <div className="flex flex-wrap gap-2">
       <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>{manualTarget.current=false;setDraws([]);setLoaded(false);setStream("all");setState(e.target.value);setSession(lotteries.find(l=>l.code===e.target.value)?.sessions[0] ?? "midday");}}>{(lotteries.length?lotteries:[{code:"FL",name:"Florida",sessions:[]}]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select>
@@ -117,5 +118,5 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
         </div>)}</div></details>}
       </div>
     </>}
-  </section>;
+  </section><GydBacktestPanel lotteries={lotteries}/></>;
 }

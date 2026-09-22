@@ -17,3 +17,7 @@ Verifikasyon: 217 tès pase, build ak lint pase. 450 konparezon matche ak vèsyo
 ## Tout lotri LottoEngine
 
 Lis lotri ak sesyon yo soti nan baz LottoEngine la: 48 lotri nan verifikasyon 22 septanm. Maten, midi, swa, lannuit ak lè presi rete diferan. Pou quiniela/borlette, tchek la sèvi ak 3 lo dirèkteman, san envante Pick 3 oswa Pick 4. GYD sèvi ak menm sesyon jou anvan; ansyen tchek la sèvi ak 2 plas sous ki nesesè yo. Sesyon yo sòti nan istwa baz la, pa yon kalandriye ofisyèl: yon jou san tiraj rete an atant. Alèt rechèch espesyal Florida yo pa aplike sou lòt lotri.
+
+## GYD sèlman — Backtest
+
+Anba tchek otomatik la, louvri GYD sèlman · Backtest. Chwazi lotri, sesyon, premye/dènye dat, epi Teste GYD. Chak dat sèvi ak menm sesyon jou kalandriye anvan an; konektè a chaje jou sous anvan kòmansman an tou. Li teste tout boul GYD yo sou 3 lo sib yo, san piramid, san entèseksyon ak ansyen tchek la, san filtre alèt Florida yo. Anvè konte; chak sesyon frape konte yon fwa. De oswa twa boul diferan konte kòm fanmi ranvèse diferan. Done manke rete an atant, pa nan denominatè a. Peryòd maksimòm: 367 jou, selon done apwouve ki deja nan LottoEngine. Jou san tiraj pa envante yon sous ranplasman. Rezilta yo se tès istorik, pa swivi alavans.

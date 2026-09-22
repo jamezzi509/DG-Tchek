@@ -1,5 +1,5 @@
 """Read-only, loopback-only adapter for AJ's installed LottoEngine database."""
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -9,16 +9,21 @@ import argparse, json, re, sqlite3
 DB = Path.home()/'Library/Application Support/LottoEngine/lotto_results.db'
 ORIGINS = {'https://dg-tchek.vercel.app', 'http://127.0.0.1:4178', 'http://localhost:4178'}
 
-def read_results(state, days):
+def read_results(state, days, start=None, end=None):
     if not re.fullmatch(r'[A-Z0-9]{2,16}',state) or not 1 <= days <= 14: raise ValueError('Invalid state or date range')
     now = datetime.now(ZoneInfo('America/New_York'))
     cutoff = (now.date()-timedelta(days=days-1)).isoformat()
+    last=now.date().isoformat()
+    if start is not None or end is not None:
+        first_date=date.fromisoformat(start);last_date=date.fromisoformat(end)
+        if first_date>last_date or (last_date-first_date).days>366 or last_date>now.date():raise ValueError('Invalid history range')
+        cutoff=(first_date-timedelta(days=1)).isoformat();last=last_date.isoformat()
     if not DB.is_file(): raise FileNotFoundError('LottoEngine database unavailable')
     with sqlite3.connect(DB.as_uri()+'?mode=ro', uri=True, timeout=3) as conn:
         conn.execute('PRAGMA query_only=ON')
         if not conn.execute('SELECT 1 FROM results WHERE state_code=? LIMIT 1',(state,)).fetchone():raise ValueError('Unknown lottery')
         conn.row_factory=sqlite3.Row
-        rows=conn.execute("SELECT state_code,draw_date,draw_period,pick3,pick4,source_url,collected_at,draw_format,numbers FROM results WHERE state_code=? AND status='approved' AND draw_date>=? AND draw_date<=? ORDER BY draw_date,CASE draw_period WHEN 'midday' THEN 0 ELSE 1 END LIMIT 500",(state,cutoff,now.date().isoformat())).fetchall()
+        rows=conn.execute("SELECT state_code,draw_date,draw_period,pick3,pick4,source_url,collected_at,draw_format,numbers FROM results WHERE state_code=? AND status='approved' AND draw_date>=? AND draw_date<=? ORDER BY draw_date,CASE draw_period WHEN 'midday' THEN 0 ELSE 1 END",(state,cutoff,last)).fetchall()
     draws=[];invalid=0
     for row in rows:
         if row['draw_format']=='quiniela':
@@ -61,7 +66,7 @@ class Handler(BaseHTTPRequestHandler):
             return
         if url.path!='/api/results':self.respond_headers(404);return
         try:
-            params=parse_qs(url.query);data=read_results(params.get('state',['FL'])[0],int(params.get('days',['10'])[0]));status=200
+            params=parse_qs(url.query);data=read_results(params.get('state',['FL'])[0],int(params.get('days',['10'])[0]),params.get('start',[None])[0],params.get('end',[None])[0]);status=200
         except (ValueError,TypeError):data={'error':'Invalid request'};status=400
         except (FileNotFoundError,sqlite3.Error):data={'error':'LottoEngine results are unavailable. Open LottoEngine on this Mac.'};status=503
         self.respond_headers(status);self.wfile.write(json.dumps(data).encode())
