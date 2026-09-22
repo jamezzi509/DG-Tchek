@@ -1,7 +1,7 @@
 {
   "date": "2026-09-22",
   "build": "passed",
-  "unit_and_component_tests": 215,
+  "unit_and_component_tests": 217,
   "test_files": 5,
   "gyd_reference_cases": 196,
   "pyramid_reference_dates": 1461,
@@ -32,5 +32,17 @@
     "cors_unrelated_origin": 403,
     "invalid_state": 400,
     "launcher_syntax": "passed"
+  },
+  "all_lotteries": {
+    "catalog_count": 48,
+    "verified_feeds": [
+      "GA",
+      "TX",
+      "HAITI",
+      "ANGUI",
+      "QPBRAZIL",
+      "RDPRI"
+    ],
+    "haiti_browser": "2026-09-22 17:30 target; source 10:30 and 11:30; direct prizes; 4 comparisons"
   }
 }

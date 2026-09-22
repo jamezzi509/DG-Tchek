@@ -12,4 +12,8 @@ Ansyen tchek la sipòte midi+swa, midi+midi ak swa+swa; 2 boul yo ka soti nan me
 
 Konektè Python an li rezilta apwouve sèlman, ak SQLite `mode=ro` epi `query_only`. Li pa modifye LottoEngine. Li koute sou 127.0.0.1:4179 sèlman. Sa pa yon koneksyon telefòn oswa sèvè nwaj: konektè a dwe mache sou menm Mac ak navigatè a. Lè mizajou sit piblik la disponib, navigatè a ka mande aksè rezo lokal pou koneksyon an.
 
-Verifikasyon: 215 tès pase, build ak lint pase. 450 konparezon matche ak vèsyon piblik referans la; 196 egzanp GYD valide. Fichye VERIFICATION.json bay detay. Sit piblik la poko mete ajou nan moman preparasyon sa a.
+Verifikasyon: 217 tès pase, build ak lint pase. 450 konparezon matche ak vèsyon piblik referans la; 196 egzanp GYD valide. Fichye VERIFICATION.json bay detay. Sit piblik la poko mete ajou nan moman preparasyon sa a.
+
+## Tout lotri LottoEngine
+
+Lis lotri ak sesyon yo soti nan baz LottoEngine la: 48 lotri nan verifikasyon 22 septanm. Maten, midi, swa, lannuit ak lè presi rete diferan. Pou quiniela/borlette, tchek la sèvi ak 3 lo dirèkteman, san envante Pick 3 oswa Pick 4. GYD sèvi ak menm sesyon jou anvan; ansyen tchek la sèvi ak 2 plas sous ki nesesè yo. Sesyon yo sòti nan istwa baz la, pa yon kalandriye ofisyèl: yon jou san tiraj rete an atant. Alèt rechèch espesyal Florida yo pa aplike sou lòt lotri.

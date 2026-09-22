@@ -10,16 +10,22 @@ DB = Path.home()/'Library/Application Support/LottoEngine/lotto_results.db'
 ORIGINS = {'https://dg-tchek.vercel.app', 'http://127.0.0.1:4178', 'http://localhost:4178'}
 
 def read_results(state, days):
-    if state not in {'FL','NY'} or not 1 <= days <= 14: raise ValueError('Invalid state or date range')
+    if not re.fullmatch(r'[A-Z0-9]{2,16}',state) or not 1 <= days <= 14: raise ValueError('Invalid state or date range')
     now = datetime.now(ZoneInfo('America/New_York'))
     cutoff = (now.date()-timedelta(days=days-1)).isoformat()
     if not DB.is_file(): raise FileNotFoundError('LottoEngine database unavailable')
     with sqlite3.connect(DB.as_uri()+'?mode=ro', uri=True, timeout=3) as conn:
         conn.execute('PRAGMA query_only=ON')
+        if not conn.execute('SELECT 1 FROM results WHERE state_code=? LIMIT 1',(state,)).fetchone():raise ValueError('Unknown lottery')
         conn.row_factory=sqlite3.Row
-        rows=conn.execute("SELECT state_code,draw_date,draw_period,pick3,pick4,source_url,collected_at FROM results WHERE state_code=? AND status='approved' AND draw_date>=? AND draw_date<=? AND draw_period IN ('midday','evening') ORDER BY draw_date,CASE draw_period WHEN 'midday' THEN 0 ELSE 1 END LIMIT 60",(state,cutoff,now.date().isoformat())).fetchall()
+        rows=conn.execute("SELECT state_code,draw_date,draw_period,pick3,pick4,source_url,collected_at,draw_format,numbers FROM results WHERE state_code=? AND status='approved' AND draw_date>=? AND draw_date<=? ORDER BY draw_date,CASE draw_period WHEN 'midday' THEN 0 ELSE 1 END LIMIT 500",(state,cutoff,now.date().isoformat())).fetchall()
     draws=[];invalid=0
     for row in rows:
+        if row['draw_format']=='quiniela':
+            prizes=(row['numbers'] or '').split('-')
+            if len(prizes)!=3 or not all(re.fullmatch(r'\d{2}',n) for n in prizes):invalid+=1;continue
+            draws.append(dict(state=state,date=row['draw_date'],session=row['draw_period'],pick3='',pick4='',prizes=prizes,sourceUrl=row['source_url'],collectedAt=row['collected_at']))
+            continue
         if not re.fullmatch(r'\d{3}',row['pick3'] or '') or not re.fullmatch(r'\d{4}',row['pick4'] or ''):
             invalid+=1;continue
         draws.append(dict(state=state,date=row['draw_date'],session=row['draw_period'],pick3=row['pick3'],pick4=row['pick4'],sourceUrl=row['source_url'],collectedAt=row['collected_at']))
@@ -41,6 +47,18 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not self.allowed():self.respond_headers(403);return
         url=urlsplit(self.path)
+        if url.path=='/api/lotteries':
+            try:
+                with sqlite3.connect(DB.as_uri()+'?mode=ro',uri=True) as conn:
+                    rows=conn.execute('SELECT state_code,state_name,draw_period FROM results ORDER BY draw_date DESC').fetchall()
+                catalog={}
+                for code,name,period in rows:
+                    if not re.fullmatch(r'[A-Z0-9]{2,16}',code):continue
+                    item=catalog.setdefault(code,dict(code=code,name=name,sessions=[]))
+                    if period not in item['sessions']:item['sessions'].append(period)
+                self.respond_headers(200);self.wfile.write(json.dumps(list(catalog.values())).encode())
+            except sqlite3.Error:self.respond_headers(503)
+            return
         if url.path!='/api/results':self.respond_headers(404);return
         try:
             params=parse_qs(url.query);data=read_results(params.get('state',['FL'])[0],int(params.get('days',['10'])[0]));status=200

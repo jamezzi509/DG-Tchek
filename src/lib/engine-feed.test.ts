@@ -16,3 +16,14 @@ describe("exact source windows",()=>{
     expect(()=>parseEngineFeed({draws:[{...row,pick4:12}]},"FL")).toThrow();
   });
 });
+
+it("handles morning/night and hourly source windows without dropping a period",()=>{
+ expect(expectedSources({date:"2026-09-22",session:"night"},"all",["morning","midday","evening","night"])).toEqual([{date:"2026-09-22",session:"midday"},{date:"2026-09-22",session:"evening"}]);
+ expect(expectedSources({date:"2026-09-22",session:"09:30"},"all",["09:30","10:30","19:30"])).toEqual([{date:"2026-09-21",session:"10:30"},{date:"2026-09-21",session:"19:30"}]);
+ expect(expectedSources({date:"2026-09-22",session:"evening"},"all",["evening"])).toEqual([{date:"2026-09-20",session:"evening"},{date:"2026-09-21",session:"evening"}]);
+});
+it("uses quiniela prizes directly and retains hourly draw identity",()=>{
+ const row={state:"HAITI",date:"2026-09-21",session:"09:30",pick3:"",pick4:"",prizes:["00","05","97"]};
+ expect(parseEngineFeed({draws:[row]},"HAITI")[0].prizes).toEqual(["00","05","97"]);
+ expect(()=>parseEngineFeed({draws:[{...row,prizes:["00","5","97"]}]},"HAITI")).toThrow();
+});
