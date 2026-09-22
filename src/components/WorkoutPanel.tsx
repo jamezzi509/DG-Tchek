@@ -11,7 +11,7 @@ function Balls({ numbers, highlighted = [] }: { numbers: string[]; highlighted?:
   return families.length ? (
     <div className="flex flex-wrap gap-2">
       {families.map(n => (
-        <span key={pairFamily(n)} className={`rounded-xl border px-3 py-2 font-num text-sm ${stars.has(pairFamily(n)) ? "border-gold bg-gold/10 text-gold" : "border-line bg-panel-raised text-paper"}`}>
+        <span key={pairFamily(n)} className={`rounded-xl border px-3 py-2 font-num text-xl font-bold ${stars.has(pairFamily(n)) ? "border-gold bg-gold/10 text-gold" : "border-line bg-panel-raised text-paper"}`}>
           {stars.has(pairFamily(n)) && <span aria-label="Komen ak tchek ou">★ </span>}
           {n}
         </span>
@@ -53,9 +53,8 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
   return (
     <section id="workouts" aria-labelledby="workout-title" className="flex flex-col gap-5 rounded-2xl border border-gold-dim/40 bg-panel p-4 sm:p-5">
       <div>
-        <p className="font-num text-[10px] uppercase tracking-widest text-gold">Konpare metòd yo</p>
-        <h2 id="workout-title" className="mt-1 text-xl font-bold">Piramid + GYD</h2>
-        <p className="mt-2 text-sm text-mute">Tout boul yo rete vizib. Yon zetwal make sa ki komen ak tchek ou a, menm si li parèt anvè.</p>
+        <h2 id="workout-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper">Piramid + GYD</h2>
+        
       </div>
 
       <div className="grid grid-cols-[minmax(0,1fr)_100px] gap-3">
@@ -69,7 +68,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
       {!pyramid && <p role="alert" className="text-sm text-red">Chwazi yon dat ki valab.</p>}
 
       <div className="space-y-3">
-        <h3 className="font-bold text-gold">1. Piramid dat la</h3>
+        <h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">1. Piramid dat la</h3>
         {pyramid ? <>
           <Balls numbers={pyramid.numbers} highlighted={compare && tchek ? common.tchekPyramid : []} />
           <details className="text-sm text-mute">
@@ -84,7 +83,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
       </div>
 
       <div className="space-y-3 border-t border-line pt-4">
-        <h3 className="font-bold text-gold">2. GYD ak 3 lo yo</h3>
+        <h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">2. GYD ak 3 lo yo</h3>
         <p className="text-sm text-mute">Antre lo <strong className="text-paper">{sourceDate ?? "jou anvan an"} · {session}</strong> pou verifye {date || "dat la"} · {session}.</p>
         <div className="grid grid-cols-3 gap-2">
           {labels.map((label, i) => <label key={label} className="text-[11px] leading-4 text-mute">{label}
@@ -95,12 +94,12 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
             }} className={`${fieldClass} mt-2 text-center text-2xl`} />
           </label>)}
         </div>
-        <p className="text-xs text-mute">Egzanp: Pick 3 <b>258</b>, Pick 4 <b>5473</b> → <b>58 / 54 / 73</b>. Kenbe 00 ak lòt zewo devan yo.</p>
+        
         {gyd ? <>
           {signals.length > 0 && <aside aria-label="Kondisyon GYD Florida" className="rounded-xl border border-gold-dim bg-gold/10 p-3 text-sm">
-            <p className="font-bold text-gold">Kondisyon pou swivi · Florida swa → swa</p>
+            <p className="font-num text-sm font-bold uppercase tracking-widest text-gold">Kondisyon pou swivi · Florida swa → swa</p>
             <ul className="mt-2 list-inside list-disc text-paper">{signals.map(signal => <li key={signal.id}>{signal.reason}</li>)}</ul>
-            <p className="mt-2 text-xs text-mute">Verifye tout lis GYD a {date} swa. Sa se kondisyon ki parèt nan rechèch la, pa yon garanti. Alèt sa a parèt nan ekran an sèlman.</p>
+            
           </aside>}
           <Balls numbers={gyd.numbers} highlighted={compare && tchek ? common.tchekGyd : []} />
           <details className="text-sm text-mute">
@@ -118,7 +117,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
 
       <div className="space-y-3 border-t border-line pt-4">
         {tchek ? <p className="text-sm text-paper">Tchek aktif: <b className="font-num">{tchek.input1} + {tchek.input2}</b></p> : <p className="text-sm text-mute">Fè yon konparezon 2 boul anlè a pou aktive boul komen yo.</p>}
-        <button type="button" disabled={!tchek || !pyramid} onClick={() => setCompare(true)} className="w-full rounded-full bg-gold px-4 py-3 font-bold text-ink disabled:cursor-not-allowed disabled:opacity-40">Wè boul komen</button>
+        <button type="button" disabled={!tchek || !pyramid} onClick={() => setCompare(true)} className="w-full rounded-full bg-gradient-to-b from-red to-red-dim px-4 py-3 text-sm font-bold uppercase tracking-wide text-white disabled:cursor-not-allowed disabled:opacity-40">Wè boul komen</button>
         {compare && tchek && pyramid && <div aria-live="polite" className="space-y-4">
           <div><h3 className="mb-2 text-sm font-bold">Tchek ou + Piramid</h3><Balls numbers={common.tchekPyramid} /></div>
           <div><h3 className="mb-2 text-sm font-bold">Tchek ou + GYD</h3>{gyd ? <Balls numbers={common.tchekGyd} /> : <p className="text-sm text-mute">Antre 3 lo GYD yo anvan.</p>}</div>
@@ -126,7 +125,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
         </div>}
         <button type="button" disabled={!pyramid} onClick={copyResults} className="w-full rounded-full border border-line px-4 py-2 text-sm text-paper disabled:opacity-40">Kopye kalkil yo</button>
         <p role="status" className="text-xs text-gold">{copyStatus}</p>
-        <p className="text-xs text-mute">Yon boul ak anvè li konte yon sèl fwa. Zetwal yo montre akò ant metòd yo; yo pa garanti yon hit.</p>
+        
       </div>
     </section>
   );

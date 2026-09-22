@@ -112,7 +112,6 @@ export default function App() {
 
         {view === "checker" ? (
           <div className="flex flex-col gap-6">
-            <AutomaticPanel db={dbInfo.db} onCompare={handleAnalyze} />
             <CompareForm onSubmit={handleAnalyze} onClear={handleClear} />
             <RecentSearches recents={recents} onSelect={handleAnalyze} onClear={handleClearRecents} />
             {result ? (
@@ -124,8 +123,6 @@ export default function App() {
               </div>
             )}
 
-            <WorkoutPanel tchek={result} />
-
             {/* Super Pick lives right here on the same page — no navigation */}
             <div className="mt-2 border-t border-dashed border-line pt-6">
               <SuperPickForm onSubmit={handleSuperAnalyze} onClear={handleSuperClear} />
@@ -135,6 +132,9 @@ export default function App() {
                 </div>
               )}
             </div>
+
+            <AutomaticPanel db={dbInfo.db} onCompare={handleAnalyze} />
+            <WorkoutPanel tchek={result} />
           </div>
         ) : (
           <AdminPanel info={dbInfo} onChange={handleDbChange} />

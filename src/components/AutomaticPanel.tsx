@@ -70,42 +70,42 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const pyramid=valid?calculatePyramid(day):null;
   const latest=draws.at(-1);
   const actual=draws.find(d=>d.date===day && d.session===session);
-  return <section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-teal/40 bg-panel p-4">
-    <div><p className="text-xs uppercase tracking-widest text-teal">LottoEngine → TCHÈK</p><h2 id="auto-title" className="mt-1 text-xl font-bold">Tchek otomatik ak alèt</h2><p className="mt-2 text-xs text-mute">Rezilta apwouve ki soti nan LottoEngine sou Mac sa a. Li rafrechi lè ou ouvri ekran an, epi chak minit pandan ekran an vizib.</p></div>
+  return <section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
+    <h2 id="auto-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper"><span className="text-gold">◆</span> Tchek otomatik</h2>
     <div className="flex flex-wrap gap-2">
       <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>setState(e.target.value as "FL"|"NY")}><option value="FL">Florida</option><option value="NY">New York</option></select>
       <input aria-label="Dat tchek otomatik" className={`${inputClass} min-w-0`} type="date" value={day} onChange={e=>{manualTarget.current=true;setDay(e.target.value);}}/>
       <select aria-label="Tiraj sib otomatik" className={inputClass} value={session} onChange={e=>{manualTarget.current=true;setSession(e.target.value as "midday"|"evening");}}><option value="midday">Midi</option><option value="evening">Swa</option></select>
     </div>
-    <button className="text-sm text-teal underline" onClick={()=>setRefresh(x=>x+1)}>Rafrechi rezilta yo</button>
+    <button className="text-sm text-gold underline" onClick={()=>setRefresh(x=>x+1)}>Rafrechi rezilta yo</button>
     {error && <p role="alert" className="text-sm text-gold">{error}</p>}
-    {latest && <p className="text-xs text-mute">Dènye tiraj resevwa: <b>{latest.date} {label(latest.session)} · {latest.pick3} / {latest.pick4}</b></p>}
+    {latest && <p className="text-xs text-mute">Dènye tiraj: <b>{latest.date} {label(latest.session)} · {latest.pick3} / {latest.pick4}</b></p>}
     {!valid && <p role="alert">Chwazi yon dat valab.</p>}
     {loaded && !draws.length && <p className="text-sm text-mute">Pa gen rezilta apwouve nan 10 dènye jou yo.</p>}
     {loaded && valid && <>
-      <p className="text-sm">{actual?`Rezilta sib: ${actual.pick3} / ${actual.pick4}`:"Rezilta sib la poko disponib nan LottoEngine. Nou pa konte l kòm yon miss."}</p>
+      <p className="text-sm">{actual?`Rezilta sib: ${actual.pick3} / ${actual.pick4}`:"Rezilta: an atant"}</p>
       <div className="flex flex-wrap gap-3 text-xs"><label><input type="checkbox" checked={gydAlerts} onChange={e=>setGydAlerts(e.target.checked)}/> Alèt kondisyon GYD</label><label><input type="checkbox" checked={oldAlerts} onChange={e=>setOldAlerts(e.target.checked)}/> Alèt tchek pa m</label></div>
-      <div className="space-y-2 border-t border-line pt-3"><h3 className="font-bold text-gold">GYD otomatik</h3>
-        {gyd && gydSource?<><p className="text-xs text-mute">Sous: {gydSource.date} {label(session)} · {gydSource.pick3} / {gydSource.pick4}</p><p className="font-num text-lg">{uniqueFamilies(gyd.numbers).join(" · ")}</p>
-          <p className="text-xs text-teal">{outcome(gyd.numbers,actual)}</p>
+      <div className="space-y-2 border-t border-line pt-3"><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">GYD otomatik</h3>
+        {gyd && gydSource?<><p className="text-xs text-mute">Sous: {gydSource.date} {label(session)} · {gydSource.pick3} / {gydSource.pick4}</p><p className="font-num text-xl font-bold text-paper">{uniqueFamilies(gyd.numbers).join(" · ")}</p>
+          <p className="text-xs text-gold">{outcome(gyd.numbers,actual)}</p>
           {gydAlerts && signals.map(s=><p key={s.id} className="text-sm text-gold">● {s.reason} → verifye {day} swa</p>)}
-          {gydAlerts && signals.length===0 && <p className="text-xs text-mute">{state==="FL" && session==="evening"?"Okenn nan 3 kondisyon GYD Florida yo pa prezan.":"3 kondisyon rechèch GYD yo aplike pou Florida swa → swa sèlman."}</p>}
+
         </>:<p className="text-sm text-mute">Sous GYD manke: {previousDate(day)} {label(session)}. Tchek la ap tann.</p>}
       </div>
-      <div><h3 className="font-bold text-gold">Piramid dat la</h3><p className="mt-2 font-num">{pyramid && uniqueFamilies(pyramid.numbers).join(" · ")}</p>{pyramid && <p className="mt-1 text-xs text-teal">{outcome(pyramid.numbers,actual)}</p>}</div>
-      <div className="space-y-3 border-t border-line pt-3"><h3 className="font-bold text-teal">Tchek pa w · 2 dènye tiraj</h3>
+      <div><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Piramid dat la</h3><p className="mt-2 font-num text-xl font-bold text-paper">{pyramid && uniqueFamilies(pyramid.numbers).join(" · ")}</p>{pyramid && <p className="mt-1 text-xs text-gold">{outcome(pyramid.numbers,actual)}</p>}</div>
+      <div className="space-y-3 border-t border-line pt-3"><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Tchek pa w · 2 dènye tiraj</h3>
         <select aria-label="Fenèt sous tchek" className={`${inputClass} w-full`} value={stream} onChange={e=>setStream(e.target.value as SourceStream)}><option value="all">Midi + swa, youn apre lòt</option><option value="midday">Midi + midi</option><option value="evening">Swa + swa</option></select>
         {required.map((s,i)=><p key={`${s.date}-${s.session}`} className="text-xs text-mute">{s.date} {label(s.session)}: {selected[i]?`${selected[i]!.pick3} / ${selected[i]!.pick4}`:"manke — ap tann"}</p>)}
         {selected.every(Boolean) && <p className="text-sm">{comparisons.length} konparezon jwenn selon règ ou yo.</p>}
-        {oldAlerts && comparisons.length>0 && <details open><summary className="cursor-pointer text-sm text-teal">Wè konparezon yo ak boul komen</summary><div className="mt-3 space-y-3">{comparisons.map(c=><div key={c.inputs.join()} className="rounded-xl border border-line p-3">
+        {oldAlerts && comparisons.length>0 && <details open><summary className="cursor-pointer text-sm text-gold">Wè konparezon yo ak boul komen</summary><div className="mt-3 space-y-3">{comparisons.map(c=><div key={c.inputs.join()} className="rounded-xl border border-line p-3">
           <button onClick={()=>onCompare(...c.inputs)} className="font-num font-bold text-gold underline">{c.inputs.join(" + ")}</button>
-          <p className="mt-1 font-num text-sm">{c.followers.length?c.followers.join(" · "):"Pa gen follower komen"}</p>
-          {c.followers.length>0 && <p className="mt-1 text-xs text-teal">{outcome(c.followers,actual)}</p>}
-          <p className="mt-1 text-xs text-mute">{c.evidence.map(e=>`${e.rule}: ${e.pairs.join(" + ")}${e.converted?" (fo doub konvèti ak chif komen an)":""}`).join("; ")}</p>
+          <p className="mt-1 font-num text-xl font-bold text-paper">{c.followers.length?c.followers.join(" · "):"Pa gen follower komen"}</p>
+          {c.followers.length>0 && <p className="mt-1 text-xs text-gold">{outcome(c.followers,actual)}</p>}
+          <details className="mt-2 text-xs text-mute"><summary className="cursor-pointer">Detay konparezon</summary><p className="mt-1">{c.evidence.map(e=>`${e.rule}: ${e.pairs.join(" + ")}${e.converted?" (fo doub konvèti ak chif komen an)":""}`).join("; ")}</p></details>
           {gyd && <p className="mt-1 text-xs">Komen ak GYD: {findCommonNumbers(c.followers,gyd.numbers).join(" · ") || "pa gen"}</p>}
           {pyramid && <p className="mt-1 text-xs">Komen ak piramid: {findCommonNumbers(c.followers,pyramid.numbers).join(" · ") || "pa gen"}</p>}
         </div>)}</div></details>}
-      </div><p className="text-xs text-mute">Alèt yo parèt nan TCHÈK sèlman. Kondisyon rechèch yo pa garanti yon hit. Done manke rete an atant.</p>
+      </div>
     </>}
   </section>;
 }
