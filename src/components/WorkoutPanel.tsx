@@ -54,7 +54,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
     <section id="workouts" aria-labelledby="workout-title" className="flex flex-col gap-5 rounded-2xl border border-gold-dim/40 bg-panel p-4 sm:p-5">
       <div>
         <h2 id="workout-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper">Piramid + GYD</h2>
-        
+
       </div>
 
       <div className="grid grid-cols-[minmax(0,1fr)_100px] gap-3">
@@ -94,12 +94,12 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
             }} className={`${fieldClass} mt-2 text-center text-2xl`} />
           </label>)}
         </div>
-        
+
         {gyd ? <>
           {signals.length > 0 && <aside aria-label="Kondisyon GYD Florida" className="rounded-xl border border-gold-dim bg-gold/10 p-3 text-sm">
             <p className="font-num text-sm font-bold uppercase tracking-widest text-gold">Kondisyon pou swivi · Florida swa → swa</p>
             <ul className="mt-2 list-inside list-disc text-paper">{signals.map(signal => <li key={signal.id}>{signal.reason}</li>)}</ul>
-            
+
           </aside>}
           <Balls numbers={gyd.numbers} highlighted={compare && tchek ? common.tchekGyd : []} />
           <details className="text-sm text-mute">
@@ -125,7 +125,7 @@ export default function WorkoutPanel({ tchek }: { tchek: DgTchekResult | null })
         </div>}
         <button type="button" disabled={!pyramid} onClick={copyResults} className="w-full rounded-full border border-line px-4 py-2 text-sm text-paper disabled:opacity-40">Kopye kalkil yo</button>
         <p role="status" className="text-xs text-gold">{copyStatus}</p>
-        
+
       </div>
     </section>
   );
