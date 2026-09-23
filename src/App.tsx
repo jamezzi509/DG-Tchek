@@ -5,6 +5,9 @@ import SuperPickForm from "./components/SuperPickForm";
 import SuperPickResults from "./components/SuperPickResults";
 import RecentSearches from "./components/RecentSearches";
 import AdminPanel from "./components/AdminPanel";
+import GydManualPanel from "./components/GydManualPanel";
+import WorkoutPanel from "./components/WorkoutPanel";
+import AutomaticPanel from "./components/AutomaticPanel";
 import { runDGTchek, runSuperPick, type DgTchekResult, type SuperPickResult } from "./lib/core";
 import { buildDatabase } from "./lib/database";
 import { addRecent, clearRecents, loadRecents, type RecentSearch } from "./lib/recents";
@@ -23,8 +26,8 @@ export default function App() {
     function handleKey(e: KeyboardEvent) {
       if (
         e.key === "Enter" &&
-        document.activeElement?.tagName !== "INPUT" &&
-        document.activeElement?.tagName !== "TEXTAREA"
+        !e.defaultPrevented &&
+        document.activeElement === document.body
       ) {
         document.getElementById("dgt-input-a")?.focus();
       }
@@ -130,6 +133,10 @@ export default function App() {
                 </div>
               )}
             </div>
+
+            <GydManualPanel />
+            <AutomaticPanel db={dbInfo.db} onCompare={handleAnalyze} />
+            <WorkoutPanel tchek={result} />
           </div>
         ) : (
           <AdminPanel info={dbInfo} onChange={handleDbChange} />
