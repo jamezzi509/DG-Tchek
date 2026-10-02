@@ -304,3 +304,16 @@ export function expandStraight(boxes: string[]): string[] {
   }
   return [...result].sort();
 }
+
+/** Match follower pairs in their displayed direction, in any Pick 3 positions. */
+export function directedStraight(common: Pair[]): string[] {
+  const followers = new Set(common);
+  const out: string[] = [];
+  for (let i = 0; i < 1000; i++) {
+    const n = String(i).padStart(3, "0");
+    const pairs = new Set([n[0]+n[1], n[0]+n[2], n[1]+n[2]]);
+    if ([...pairs].filter(p => followers.has(p)).length >= 2 ||
+        (n[0] === n[1] && n[1] === n[2] && followers.has(n.slice(0,2)))) out.push(n);
+  }
+  return out;
+}
