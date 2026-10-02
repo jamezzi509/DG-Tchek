@@ -1,6 +1,8 @@
 import { generateRowsFromSeed, reversePair, type Database } from "./core";
 import { BUILT_IN_SEEDS, type Seed } from "../data/seeds";
 
+import { REVISED_ROWS } from "../data/revised-rows";
+
 const CUSTOM_SEEDS_KEY = "dgtchek:custom-seeds";
 
 export function loadCustomSeeds(): Seed[] {
@@ -82,7 +84,7 @@ export function buildDatabase(): DatabaseInfo {
     if (customKeys.has(seed.key)) continue; // custom overrides built-in with same key
     seedSources.push({ key: seed.key, builtIn: true });
     for (const row of generateRowsFromSeed(seed.key, seed.list)) {
-      db[row.key] = row.list;
+      db[row.key] = REVISED_ROWS[row.key] ?? row.list;
       directKeys.add(row.key);
     }
   }

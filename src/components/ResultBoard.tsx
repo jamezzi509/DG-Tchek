@@ -77,7 +77,7 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
       </div>
 
       {/* Pick 3 / Pick 4 combos */}
-      {result.common.length >= 2 && (
+      {(result.pick3.length > 0 || result.pick4.length > 0) && (
         <div className="rounded-2xl border border-gold-dim/40 bg-panel p-5">
           <div className="mb-4 flex items-center justify-center gap-2">
             <span className="text-xl">🎯</span>
@@ -91,7 +91,7 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
                 tab === "3" ? "bg-red text-white" : "border border-line text-mute hover:border-gold-dim hover:text-paper"
               }`}
             >
-              3 Chif
+              3 Chif BOX
             </button>
             <button
               onClick={() => setTab("4")}

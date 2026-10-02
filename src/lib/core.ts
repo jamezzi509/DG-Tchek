@@ -176,10 +176,17 @@ function pairsDoublesLast(common: Pair[]): [Pair, Pair][] {
 
 /** Generates the deduped Pick 3 and Pick 4 lists for a set of common numbers. */
 export function computePicksFromCommon(common: Pair[]): { pick3: string[]; pick4: string[] } {
+  const canonical = (n: string) => n.split("").sort().join("");
+  const followers = new Set(common.map(canonical));
   const p3: string[] = [];
+  for (let a = 0; a <= 9; a++) for (let b = a; b <= 9; b++) for (let c = b; c <= 9; c++) {
+    const n = `${a}${b}${c}`;
+    const pairs = new Set([`${a}${b}`, `${a}${c}`, `${b}${c}`]);
+    const matches = [...pairs].filter(pair => followers.has(pair)).length;
+    if (matches >= 2 || (a === b && b === c && followers.has(`${a}${a}`))) p3.push(n);
+  }
   const p4: string[] = [];
   for (const [A, B] of pairsDoublesLast(common)) {
-    p3.push(...generatePick3(A, B));
     p4.push(...generatePick4(A, B));
   }
   return { pick3: dedupePreserveOrder(p3), pick4: dedupePreserveOrder(p4) };
