@@ -1,0 +1,22 @@
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, expect, it } from 'vitest';
+import ResultBoard from './ResultBoard';
+import { runDGTchek } from '../lib/core';
+import { buildDatabase } from '../lib/database';
+afterEach(cleanup);
+it('limits favorites to three, filters BOX, expands straight and resets for a new comparison',()=>{
+ localStorage.clear();
+ const {rerender}=render(<ResultBoard result={runDGTchek('36','66',buildDatabase().db)}/>);
+ expect(screen.queryByRole('button',{name:'4 Chif'})).toBeNull();
+ for(const n of ['22','27','77'])fireEvent.click(screen.getByRole('button',{name:`Favori ${n}`}));
+ expect((screen.getByRole('button',{name:'Favori 45'}) as HTMLButtonElement).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('checkbox'));
+ expect(screen.queryByText('457',{exact:true})).toBeNull();
+ expect(screen.getByText('227',{exact:true})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'3 Chif STRAIGHT'}));
+ expect(screen.getByText('272',{exact:true})).toBeTruthy();
+ expect(screen.getByText('722',{exact:true})).toBeTruthy();
+ rerender(<ResultBoard result={runDGTchek('02','00',buildDatabase().db)}/>);
+ expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false);
+ expect(screen.getByText('111',{exact:true})).toBeTruthy();
+});

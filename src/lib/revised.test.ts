@@ -27,3 +27,10 @@ describe('Approved followers and BOX construction',()=>{
   expect(buildDatabase().db['00']).toEqual(['07']);
  });
 });
+
+import { expandStraight } from './core';
+it('expands BOX into distinct exact orders, including zeroes and triples',()=>{
+ expect(expandStraight(['012'])).toEqual(['012','021','102','120','201','210']);
+ expect(expandStraight(['112','121','111'])).toEqual(['111','112','121','211']);
+ expect(expandStraight(['000'])).toEqual(['000']);
+});
