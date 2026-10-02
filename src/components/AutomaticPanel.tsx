@@ -1,8 +1,7 @@
-import GydBacktestPanel from "./GydBacktestPanel";
 import { useEffect, useRef, useState } from "react";
-import { gydFloridaSignals, scanOldWorkout, sessionRank } from "../lib/automatic-checks";
+import { scanOldWorkout, sessionRank } from "../lib/automatic-checks";
 import { drawLabel, drawPrizes, expectedSources, parseEngineFeed, type EngineLottery, type EngineDraw, type SourceStream } from "../lib/engine-feed";
-import { calculateGyd, calculatePyramid, isValidDate, newYorkToday, previousDate, uniqueFamilies } from "../lib/workouts";
+import { isValidDate, newYorkToday } from "../lib/workouts";
 import { findCommonNumbers, type Database } from "../lib/core";
 
 const inputClass="max-w-full rounded-xl border border-line bg-panel-raised px-3 py-2 text-sm text-paper";
@@ -26,10 +25,9 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const [error,setError]=useState("");
   const [loaded,setLoaded]=useState(false);
   const [refresh,setRefresh]=useState(0);
-  const [gydAlerts,setGydAlerts]=useState(()=>preference("gyd"));
   const [oldAlerts,setOldAlerts]=useState(()=>preference("old"));
   const manualTarget=useRef(false);
-  useEffect(()=>{try{localStorage.setItem("dgtchek:auto:gyd",gydAlerts?"on":"off");localStorage.setItem("dgtchek:auto:old",oldAlerts?"on":"off");}catch{/* Device storage may be unavailable. */}},[gydAlerts,oldAlerts]);
+  useEffect(()=>{try{localStorage.setItem("dgtchek:auto:old",oldAlerts?"on":"off");}catch{/* Device storage may be unavailable. */}},[oldAlerts]);
   useEffect(()=>{
     let controller:AbortController|undefined;
     let active=true;
@@ -74,11 +72,6 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const required=valid?expectedSources(target,stream,sessions):[];
   const selected=required.map(s=>draws.find(d=>d.date===s.date && d.session===s.session));
   const comparisons=selected.length===2 && selected.every((s):s is EngineDraw=>!!s)?scanOldWorkout([selected[0]!,selected[1]!],target,db):[];
-  const gydSource=valid?draws.find(d=>d.date===previousDate(day) && d.session===session):undefined;
-  const prizes:[string,string,string]|null=gydSource?drawPrizes(gydSource):null;
-  const gyd=prizes?calculateGyd(prizes):null;
-  const signals=prizes && state==="FL"?gydFloridaSignals(prizes,session):[];
-  const pyramid=valid?calculatePyramid(day):null;
   const latest=draws.at(-1);
   const actual=draws.find(d=>d.date===day && d.session===session);
   return <><section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
@@ -95,15 +88,7 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
     {loaded && !draws.length && <p className="text-sm text-mute">Pa gen rezilta apwouve nan 10 dènye jou yo.</p>}
     {loaded && valid && <>
       <p className="text-sm">{actual?`Rezilta sib: ${drawLabel(actual)}`:"Rezilta: an atant"}</p>
-      <div className="flex flex-wrap gap-3 text-xs"><label><input type="checkbox" checked={gydAlerts} onChange={e=>setGydAlerts(e.target.checked)}/> Alèt kondisyon GYD</label><label><input type="checkbox" checked={oldAlerts} onChange={e=>setOldAlerts(e.target.checked)}/> Alèt tchek pa m</label></div>
-      <div className="space-y-2 border-t border-line pt-3"><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">GYD otomatik</h3>
-        {gyd && gydSource?<><p className="text-xs text-mute">Sous: {gydSource.date} {label(session)} · {drawLabel(gydSource)}</p><p className="font-num text-xl font-bold text-paper">{uniqueFamilies(gyd.numbers).join(" · ")}</p>
-          <p className="text-xs text-gold">{outcome(gyd.numbers,actual)}</p>
-          {gydAlerts && signals.map(s=><p key={s.id} className="text-sm text-gold">● {s.reason} → verifye {day} swa</p>)}
-
-        </>:<p className="text-sm text-mute">Sous GYD manke: {previousDate(day)} {label(session)}. Tchek la ap tann.</p>}
-      </div>
-      <div><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Piramid dat la</h3><p className="mt-2 font-num text-xl font-bold text-paper">{pyramid && uniqueFamilies(pyramid.numbers).join(" · ")}</p>{pyramid && <p className="mt-1 text-xs text-gold">{outcome(pyramid.numbers,actual)}</p>}</div>
+      <div className="flex flex-wrap gap-3 text-xs"><label><input type="checkbox" checked={oldAlerts} onChange={e=>setOldAlerts(e.target.checked)}/> Alèt tchek pa m</label></div>
       <div className="space-y-3 border-t border-line pt-3"><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Tchek pa w · 2 dènye tiraj</h3>
         <select aria-label="Fenèt sous tchek" className={`${inputClass} w-full`} value={stream} onChange={e=>setStream(e.target.value as SourceStream)}><option value="all">Tout tiraj youn apre lòt</option>{sessions.map(s=><option key={s} value={s}>{label(s)} + {label(s)}</option>)}</select>
         {required.map((s,i)=><p key={`${s.date}-${s.session}`} className="text-xs text-mute">{s.date} {label(s.session)}: {selected[i]?drawLabel(selected[i]!):"manke — ap tann"}</p>)}
@@ -113,10 +98,8 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
           <p className="mt-1 font-num text-xl font-bold text-paper">{c.followers.length?c.followers.join(" · "):"Pa gen follower komen"}</p>
           {c.followers.length>0 && <p className="mt-1 text-xs text-gold">{outcome(c.followers,actual)}</p>}
           <details className="mt-2 text-xs text-mute"><summary className="cursor-pointer">Detay konparezon</summary><p className="mt-1">{c.evidence.map(e=>`${e.rule}: ${e.pairs.join(" + ")}${e.converted?" (fo doub konvèti ak chif komen an)":""}`).join("; ")}</p></details>
-          {gyd && <p className="mt-1 text-xs">Komen ak GYD: {findCommonNumbers(c.followers,gyd.numbers).join(" · ") || "pa gen"}</p>}
-          {pyramid && <p className="mt-1 text-xs">Komen ak piramid: {findCommonNumbers(c.followers,pyramid.numbers).join(" · ") || "pa gen"}</p>}
         </div>)}</div></details>}
       </div>
     </>}
-  </section><GydBacktestPanel lotteries={lotteries}/></>;
+  </section></>;
 }
