@@ -292,3 +292,15 @@ export function formatResult(result: DgTchekResult): string {
   ];
   return lines.join("\n");
 }
+
+/** All distinct exact orders of the BOX choices, retaining leading zeroes. */
+export function expandStraight(boxes: string[]): string[] {
+  const result = new Set<string>();
+  for (const box of boxes) {
+    if (!/^\d{3}$/.test(box)) continue;
+    for (const [a,b,c] of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]) {
+      result.add(box[a]+box[b]+box[c]);
+    }
+  }
+  return [...result].sort();
+}
