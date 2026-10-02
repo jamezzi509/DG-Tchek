@@ -34,3 +34,11 @@ it('expands BOX into distinct exact orders, including zeroes and triples',()=>{
  expect(expandStraight(['112','121','111'])).toEqual(['111','112','121','211']);
  expect(expandStraight(['000'])).toEqual(['000']);
 });
+
+import { directedStraight } from './core';
+it('keeps follower direction without automatic reversals',()=>{
+ expect(directedStraight(['38','39'])).toEqual(['389','398']);
+ expect(directedStraight(['00'])).toEqual(['000']);
+ expect(directedStraight(['01','02'])).toEqual(['012','021']);
+ expect(directedStraight(['22','27','77'])).toEqual(['222','227','272','277','727','777']);
+});

@@ -15,7 +15,7 @@ it('limits favorites to three, filters BOX, expands straight and resets for a ne
  expect(screen.getByText('227',{exact:true})).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'3 Chif STRAIGHT'}));
  expect(screen.getByText('272',{exact:true})).toBeTruthy();
- expect(screen.getByText('722',{exact:true})).toBeTruthy();
+ expect(screen.queryByText('722',{exact:true})).toBeNull();
  rerender(<ResultBoard result={runDGTchek('02','00',buildDatabase().db)}/>);
  expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false);
  expect(screen.getByText('111',{exact:true})).toBeTruthy();
