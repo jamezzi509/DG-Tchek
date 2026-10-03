@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { scanOldWorkout, sessionRank } from "../lib/automatic-checks";
-import { drawLabel, drawPrizes, expectedSources, parseEngineFeed, type EngineLottery, type EngineDraw, type SourceStream } from "../lib/engine-feed";
+import { rankFollowers, scanOldWorkout, sessionRank } from "../lib/automatic-checks";
+import { drawLabel, drawPrizes, expectedSources, parseEngineFeed, type EngineLottery, type EngineDraw } from "../lib/engine-feed";
 import { isValidDate, newYorkToday } from "../lib/workouts";
 import { findCommonNumbers, type Database } from "../lib/core";
 
@@ -20,7 +20,6 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const sessions=lotteries.find(l=>l.code===state)?.sessions ?? ["midday","evening"];
   const [day,setDay]=useState(newYorkToday);
   const [session,setSession]=useState("midday");
-  const [stream,setStream]=useState<SourceStream>("all");
   const [draws,setDraws]=useState<EngineDraw[]>([]);
   const [error,setError]=useState("");
   const [loaded,setLoaded]=useState(false);
@@ -69,15 +68,19 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   },[state,refresh]);
   const valid=isValidDate(day);
   const target={date:day,session};
-  const required=valid?expectedSources(target,stream,sessions):[];
+  const required=valid?expectedSources(target,"all",sessions):[];
   const selected=required.map(s=>draws.find(d=>d.date===s.date && d.session===s.session));
   const comparisons=selected.length===2 && selected.every((s):s is EngineDraw=>!!s)?scanOldWorkout([selected[0]!,selected[1]!],target,db):[];
+  const ranking=rankFollowers(comparisons);
+  const strongest=ranking.filter(r=>r.count >= 2 && r.count===ranking[0]?.count);
+  const [copied,setCopied]=useState(false);
+  useEffect(()=>setCopied(false),[state,day,session,draws]);
   const latest=draws.at(-1);
   const actual=draws.find(d=>d.date===day && d.session===session);
   return <><section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
     <h2 id="auto-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper"><span className="text-gold">◆</span> Tchek otomatik</h2>
     <div className="flex flex-wrap gap-2">
-      <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>{manualTarget.current=false;setDraws([]);setLoaded(false);setStream("all");setState(e.target.value);setSession(lotteries.find(l=>l.code===e.target.value)?.sessions[0] ?? "midday");}}>{(lotteries.length?lotteries:[{code:"FL",name:"Florida",sessions:[]}]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select>
+      <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>{manualTarget.current=false;setDraws([]);setLoaded(false);setState(e.target.value);setSession(lotteries.find(l=>l.code===e.target.value)?.sessions[0] ?? "midday");}}>{(lotteries.length?lotteries:[{code:"FL",name:"Florida",sessions:[]}]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select>
       <input aria-label="Dat tchek otomatik" className={`${inputClass} min-w-0`} type="date" value={day} onChange={e=>{manualTarget.current=true;setDay(e.target.value);}}/>
       <select aria-label="Tiraj sib otomatik" className={inputClass} value={session} onChange={e=>{manualTarget.current=true;setSession(e.target.value);}}>{sessions.map(s=><option key={s} value={s}>{label(s)}</option>)}</select>
     </div>
@@ -90,9 +93,16 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
       <p className="text-sm">{actual?`Rezilta sib: ${drawLabel(actual)}`:"Rezilta: an atant"}</p>
       <div className="flex flex-wrap gap-3 text-xs"><label><input type="checkbox" checked={oldAlerts} onChange={e=>setOldAlerts(e.target.checked)}/> Alèt tchek pa m</label></div>
       <div className="space-y-3 border-t border-line pt-3"><h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Tchek pa w · 2 dènye tiraj</h3>
-        <select aria-label="Fenèt sous tchek" className={`${inputClass} w-full`} value={stream} onChange={e=>setStream(e.target.value as SourceStream)}><option value="all">Tout tiraj youn apre lòt</option>{sessions.map(s=><option key={s} value={s}>{label(s)} + {label(s)}</option>)}</select>
         {required.map((s,i)=><p key={`${s.date}-${s.session}`} className="text-xs text-mute">{s.date} {label(s.session)}: {selected[i]?drawLabel(selected[i]!):"manke — ap tann"}</p>)}
         {selected.every(Boolean) && <p className="text-sm">{comparisons.length} konparezon jwenn selon règ ou yo.</p>}
+        {comparisons.length>0 && <div className="rounded-xl border border-gold-dim/40 p-3 space-y-3">
+          <h3 className="font-num text-sm font-bold uppercase tracking-widest text-gold">Pi fò</h3>
+          {strongest.length ? <>
+            <div className="flex flex-wrap gap-3">{strongest.map(r=><div key={r.number} className="text-center"><span className="font-num text-xl font-bold text-paper">{r.number}</span><p className="text-xs text-mute">{r.count} tchek</p></div>)}</div>
+            <button className="text-xs text-gold underline" onClick={()=>{navigator.clipboard?.writeText(strongest.map(r=>r.number).join(" ")).then(()=>setCopied(true),()=>setCopied(false));}}>{copied?"Kopye ✓":"Kopye pi fò yo"}</button>
+          </>:<p className="text-sm text-mute">Pa gen boul ki repete nan plizyè tchek.</p>}
+          <details><summary className="cursor-pointer text-xs text-gold">Tout klasman an</summary><div className="mt-2 flex flex-wrap gap-3 text-sm">{ranking.map(r=><span key={r.number}>{r.number} · {r.count}</span>)}</div></details>
+        </div>}
         {oldAlerts && comparisons.length>0 && <details open><summary className="cursor-pointer text-sm text-gold">Wè konparezon yo ak boul komen</summary><div className="mt-3 space-y-3">{comparisons.map(c=><div key={c.inputs.join()} className="rounded-xl border border-line p-3">
           <button onClick={()=>onCompare(...c.inputs)} className="font-num font-bold text-gold underline">{c.inputs.join(" + ")}</button>
           <p className="mt-1 font-num text-xl font-bold text-paper">{c.followers.length?c.followers.join(" · "):"Pa gen follower komen"}</p>

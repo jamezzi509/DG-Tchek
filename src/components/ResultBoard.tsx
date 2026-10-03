@@ -119,7 +119,6 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
             3 Chif {tab.toUpperCase()} <span className="text-line-bright">({activeCombos.length})</span>
           </p>
 
-          {tab === "straight" && <p className="mb-3 text-xs text-mute">Menm sans ak boul yo: 38 rete 38.</p>}
           {activeCombos.length === 0 && <p className="mb-3 text-sm text-mute">Pa gen 3 chif pou chwa sa a. Chwazi boul ki ka fòme omwen 2 pè diferan, oswa yon doub pou trip li.</p>}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {activeCombos.map((n, i) => (
