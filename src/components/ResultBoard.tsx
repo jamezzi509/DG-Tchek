@@ -41,17 +41,16 @@ function ComboChip({ value }: { value: string }) {
 export default function ResultBoard({ result }: { result: MinimalResult }) {
   const [tab, setTab] = useState<"box" | "straight">("box");
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const favoritesOnly = favorites.length > 0;
   const [copiedCommon, copyCommon] = useCopy();
   const [copiedCombo, copyCombo] = useCopy();
 
   // Reset to the 3-digit tab whenever a fresh comparison comes in.
-  useEffect(() => { setTab("box"); setFavorites([]); setFavoritesOnly(false); }, [result]);
+  useEffect(() => { setTab("box"); setFavorites([]); }, [result]);
 
   const boxes = favoritesOnly ? computePicksFromCommon(favorites).pick3 : result.pick3;
   const activeCombos = tab === "box" ? boxes : directedStraight(favoritesOnly ? favorites : result.common);
   function toggleFavorite(n: string) {
-    if (favorites.length === 1 && favorites.includes(n)) setFavoritesOnly(false);
     setFavorites(current => current.includes(n) ? current.filter(x => x !== n) : current.length < 3 ? [...current, n] : current);
   }
 
@@ -93,10 +92,10 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
             <span className="font-num text-base font-bold uppercase tracking-widest text-gold">3 Chif</span>
           </div>
 
-          <label className="mb-4 flex items-center gap-2 text-sm text-gold">
-            <input type="checkbox" checked={favoritesOnly} disabled={favorites.length === 0} onChange={e => setFavoritesOnly(e.target.checked)} />
-            3 chif ak favori mwen yo sèlman
-          </label>
+          {favoritesOnly && <div className="mb-4 flex items-center justify-between gap-2 text-xs text-gold">
+            <span>3 chif ak favori yo: {favorites.join(" · ")}</span>
+            <button type="button" className="underline" onClick={() => setFavorites([])}>Wè tout</button>
+          </div>}
           <div className="mb-4 flex gap-2">
             <button
               onClick={() => setTab("box")}
