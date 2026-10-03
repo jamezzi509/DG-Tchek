@@ -73,10 +73,10 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
             </div>
             <p className="mt-3 text-center text-xs text-mute">Peze sou boul yo pou chwazi 3 favori ({favorites.length}/3).</p>
             <button
-              onClick={() => copyCommon(result.common.join(" "))}
+              onClick={() => copyCommon((favoritesOnly ? favorites : result.common).join(" "))}
               className="mx-auto mt-4 flex items-center gap-2 rounded-full border border-gold-dim/60 px-5 py-2 text-xs font-bold uppercase tracking-wide text-gold transition hover:border-gold hover:bg-gold/10 active:scale-95"
             >
-              {copiedCommon ? "Kopye ✓" : "⧉ Kopye"}
+              {copiedCommon ? "Kopye ✓" : favoritesOnly ? "⧉ Kopye favori yo" : "⧉ Kopye boul yo"}
             </button>
           </>
         ) : (
