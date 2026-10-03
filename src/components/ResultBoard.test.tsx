@@ -13,8 +13,8 @@ it('limits favorites to three, filters BOX, expands straight and resets for a ne
  expect(screen.queryByText('457',{exact:true})).toBeNull();
  expect(screen.getByText('227',{exact:true})).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'3 Chif STRAIGHT'}));
- expect(screen.getByText('272',{exact:true})).toBeTruthy();
- expect(screen.queryByText('722',{exact:true})).toBeNull();
+ expect(screen.getByText('722',{exact:true})).toBeTruthy();
+ expect(screen.queryByText('272',{exact:true})).toBeNull();
  fireEvent.click(screen.getByRole('button',{name:'Wè tout'}));
  expect(screen.getByText('457',{exact:true})).toBeTruthy();
  fireEvent.click(screen.getByRole('button',{name:'Favori 22'}));
@@ -35,5 +35,5 @@ it('copies only selected favorites and the currently displayed BOX or STRAIGHT l
  expect(writeText).toHaveBeenLastCalledWith('222 227 277 777');
  fireEvent.click(screen.getByRole('button',{name:'3 Chif STRAIGHT'}));
  fireEvent.click(screen.getByRole('button',{name:/Kopye STRAIGHT/i}));
- expect(writeText).toHaveBeenLastCalledWith('222 227 272 277 727 777');
+ expect(writeText).toHaveBeenLastCalledWith('222 227 277 722 727 777');
 });

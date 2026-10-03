@@ -305,15 +305,18 @@ export function expandStraight(boxes: string[]): string[] {
   return [...result].sort();
 }
 
-/** Match follower pairs in their displayed direction, in any Pick 3 positions. */
+/** Remove one shared digit from A and prefix the remainder to B. */
 export function directedStraight(common: Pair[]): string[] {
-  const followers = new Set(common);
-  const out: string[] = [];
-  for (let i = 0; i < 1000; i++) {
-    const n = String(i).padStart(3, "0");
-    const pairs = new Set([n[0]+n[1], n[0]+n[2], n[1]+n[2]]);
-    if ([...pairs].filter(p => followers.has(p)).length >= 2 ||
-        (n[0] === n[1] && n[1] === n[2] && followers.has(n.slice(0,2)))) out.push(n);
+  const pairs = dedupePreserveOrder(common.filter(isValidPair));
+  const out = new Set<string>();
+  for (const a of pairs) {
+    if (isDouble(a)) out.add(a[0].repeat(3));
+    for (const b of pairs) {
+      if (isMirrorMatch(a,b)) continue;
+      for (const digit of new Set(a)) {
+        if (b.includes(digit)) out.add(a.replace(digit, "") + b);
+      }
+    }
   }
-  return out;
+  return [...out].sort();
 }

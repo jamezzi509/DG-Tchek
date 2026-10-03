@@ -37,8 +37,13 @@ it('expands BOX into distinct exact orders, including zeroes and triples',()=>{
 
 import { directedStraight } from './core';
 it('keeps follower direction without automatic reversals',()=>{
- expect(directedStraight(['38','39'])).toEqual(['389','398']);
+ expect(directedStraight(['38','39'])).toEqual(['839','938']);
  expect(directedStraight(['00'])).toEqual(['000']);
- expect(directedStraight(['01','02'])).toEqual(['012','021']);
- expect(directedStraight(['22','27','77'])).toEqual(['222','227','272','277','727','777']);
+ expect(directedStraight(['01','02'])).toEqual(['102','201']);
+ expect(directedStraight(['22','27','77'])).toEqual(['222','227','277','722','727','777']);
+});
+
+it('reproduces all eighteen approved 35–38 STRAIGHT values',()=>{
+ const common=runDGTchek('35','38',buildDatabase().db).common;
+ expect(directedStraight(common)).toEqual(['246','426','444','446','447','449','499','644','647','649','744','746','749','944','946','947','949','999']);
 });

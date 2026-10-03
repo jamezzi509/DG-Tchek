@@ -56,8 +56,10 @@ export function scanOldWorkout(sources: [SourceDraw, SourceDraw], target: Pick<S
     throw new Error("Chwazi 2 tiraj diferan ki anvan tiraj sib la.");
   }
   const pool = [...new Set(sources.flatMap(sourcePairs))].sort();
+  const latest = new Set(sourcePairs(key(sources[0]) > key(sources[1]) ? sources[0] : sources[1]));
   const found = new Map<string, AutoComparison>();
   for (const x of pool) for (const y of pool) {
+    if (!latest.has(x) && !latest.has(y)) continue;
     const gx = circularGap(x), gy = circularGap(y);
     const shared = [...new Set([...x].filter(d => y.includes(d)))];
     if (!shared.length || gx < 1 || gx > 4) continue;
@@ -78,4 +80,19 @@ export function scanOldWorkout(sources: [SourceDraw, SourceDraw], target: Pick<S
     }
   }
   return [...found.values()];
+}
+
+/** Count each canonical follower once per distinct computed comparison. */
+export function rankFollowers(comparisons: AutoComparison[]) {
+  const support = new Map<string, Set<string>>();
+  for (const c of comparisons) {
+    const key = c.inputs.map(pairFamily).sort().join("-");
+    for (const pair of c.followers) {
+      const n = pairFamily(pair);
+      if (!support.has(n)) support.set(n,new Set());
+      support.get(n)!.add(key);
+    }
+  }
+  return [...support].map(([number, keys]) => ({number, count:keys.size}))
+    .sort((a,b) => b.count-a.count || a.number.localeCompare(b.number));
 }
