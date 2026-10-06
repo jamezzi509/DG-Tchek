@@ -1,0 +1,403 @@
+[
+  {
+    "code": "ANGUI",
+    "name": "Anguila (RD)",
+    "sessions": [
+      "17:00",
+      "18:00",
+      "19:00",
+      "20:00",
+      "21:00",
+      "22:00",
+      "08:00",
+      "10:00",
+      "13:00",
+      "14:00",
+      "15:00",
+      "16:00",
+      "09:00",
+      "11:00",
+      "12:00"
+    ]
+  },
+  {
+    "code": "AR",
+    "name": "Arkansas",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "AZ",
+    "name": "Arizona",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "CA",
+    "name": "California",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "CAON",
+    "name": "Ontario (CA)",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "CAQC",
+    "name": "Qu\u00e9bec (CA)",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "CT",
+    "name": "Connecticut",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "DC",
+    "name": "Washington, DC",
+    "sessions": [
+      "evening",
+      "night",
+      "midday"
+    ]
+  },
+  {
+    "code": "DE",
+    "name": "Delaware",
+    "sessions": [
+      "night",
+      "midday"
+    ]
+  },
+  {
+    "code": "FL",
+    "name": "Florida",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "GA",
+    "name": "Georgia",
+    "sessions": [
+      "evening",
+      "night",
+      "midday"
+    ]
+  },
+  {
+    "code": "HAITI",
+    "name": "Haiti Bolet",
+    "sessions": [
+      "17:30",
+      "18:30",
+      "19:30",
+      "09:30",
+      "10:30",
+      "11:30"
+    ]
+  },
+  {
+    "code": "IA",
+    "name": "Iowa",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "ID",
+    "name": "Idaho",
+    "sessions": [
+      "midday",
+      "night"
+    ]
+  },
+  {
+    "code": "IL",
+    "name": "Illinois",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "IN",
+    "name": "Indiana",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "KY",
+    "name": "Kentucky",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "LA",
+    "name": "Louisiana",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "MD",
+    "name": "Maryland",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "ME",
+    "name": "Maine",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "MI",
+    "name": "Michigan",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "MO",
+    "name": "Missouri",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "MS",
+    "name": "Mississippi",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "NC",
+    "name": "North Carolina",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "NE",
+    "name": "Nebraska",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "NH",
+    "name": "New Hampshire",
+    "sessions": [
+      "evening",
+      "midday",
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "NJ",
+    "name": "New Jersey",
+    "sessions": [
+      "midday",
+      "evening"
+    ]
+  },
+  {
+    "code": "NM",
+    "name": "New Mexico",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "NY",
+    "name": "New York",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "OH",
+    "name": "Ohio",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "PA",
+    "name": "Pennsylvania",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "PR",
+    "name": "Puerto Rico (Pega)",
+    "sessions": [
+      "night",
+      "midday"
+    ]
+  },
+  {
+    "code": "QPBRAZIL",
+    "name": "Quick Play Brazil",
+    "sessions": [
+      "12:00",
+      "15:00",
+      "19:00",
+      "20:00"
+    ]
+  },
+  {
+    "code": "RDKING",
+    "name": "King Lottery (RD)",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "RDLEI",
+    "name": "Leidsa (RD)",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "RDLOT",
+    "name": "Loteka (RD)",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "RDLTD",
+    "name": "LoteDom (RD)",
+    "sessions": [
+      "midday"
+    ]
+  },
+  {
+    "code": "RDNAC",
+    "name": "Loter\u00eda Nacional (RD)",
+    "sessions": [
+      "evening"
+    ]
+  },
+  {
+    "code": "RDPRI",
+    "name": "La Primera (RD)",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "RDREA",
+    "name": "Loter\u00eda Real (RD)",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "RDSUE",
+    "name": "La Suerte (RD)",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "SC",
+    "name": "South Carolina",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "TN",
+    "name": "Tennessee",
+    "sessions": [
+      "evening",
+      "midday",
+      "morning"
+    ]
+  },
+  {
+    "code": "TX",
+    "name": "Texas",
+    "sessions": [
+      "evening",
+      "midday",
+      "morning",
+      "night"
+    ]
+  },
+  {
+    "code": "VA",
+    "name": "Virginia",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "VT",
+    "name": "Vermont",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "WI",
+    "name": "Wisconsin",
+    "sessions": [
+      "evening",
+      "midday"
+    ]
+  },
+  {
+    "code": "WV",
+    "name": "West Virginia",
+    "sessions": [
+      "evening"
+    ]
+  }
+]

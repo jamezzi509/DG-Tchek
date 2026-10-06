@@ -1,3 +1,4 @@
+import catalogDefaults from "../data/lotteries.json";
 import { useEffect, useRef, useState } from "react";
 import { rankFollowers, scanOldWorkout, sessionRank } from "../lib/automatic-checks";
 import { drawLabel, drawPrizes, expectedSources, parseEngineFeed, type EngineLottery, type EngineDraw } from "../lib/engine-feed";
@@ -16,7 +17,7 @@ function outcome(numbers:string[],actual:EngineDraw|undefined) {
 
 export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:string,b:string)=>void}) {
   const [state,setState]=useState("FL");
-  const [lotteries,setLotteries]=useState<EngineLottery[]>([]);
+  const [lotteries,setLotteries]=useState<EngineLottery[]>(()=>catalogDefaults.map(l=>({...l,sessions:[...l.sessions].sort((a,b)=>sessionRank(a)-sessionRank(b))})).sort((a,b)=>a.name.localeCompare(b.name)));
   const sessions=lotteries.find(l=>l.code===state)?.sessions ?? ["midday","evening"];
   const [day,setDay]=useState(newYorkToday);
   const [session,setSession]=useState("midday");
@@ -26,12 +27,13 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   const [refresh,setRefresh]=useState(0);
   const [oldAlerts,setOldAlerts]=useState(()=>preference("old"));
   const manualTarget=useRef(false);
+  const imported=useRef<EngineDraw[]|null>(null);
   useEffect(()=>{try{localStorage.setItem("dgtchek:auto:old",oldAlerts?"on":"off");}catch{/* Device storage may be unavailable. */}},[oldAlerts]);
   useEffect(()=>{
     let controller:AbortController|undefined;
     let active=true;
     async function read() {
-      if(document.hidden)return;
+      if(document.hidden||imported.current)return;
       controller?.abort();controller=new AbortController();
       try {
         const catalogResponse=await fetch("http://127.0.0.1:4179/api/lotteries",{signal:controller.signal,cache:"no-store"});
@@ -46,7 +48,7 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
         if(!response.ok)throw new Error("LottoEngine pa disponib.");
         const raw=await response.json();
         const incoming=parseEngineFeed(raw,state);
-        if(!active)return;
+        if(!active||imported.current)return;
         setDraws(incoming);setLoaded(true);
         if(!manualTarget.current){
           const today=newYorkToday();
@@ -56,8 +58,8 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
         }
         setError(raw.invalidRows ? "LottoEngine gen rezilta ki pa konplè; yo pa antre nan tchek yo." : "");
       } catch(e) {
-        if(!active || (e instanceof Error && e.name==="AbortError"))return;
-        setDraws([]);setLoaded(false);setError("Koneksyon LottoEngine sou Mac la pa disponib. Louvri lansè TCHÈK la epi eseye ankò.");
+        if(!active || imported.current || (e instanceof Error && e.name==="AbortError"))return;
+        setDraws([]);setLoaded(false);setError("LottoEngine konekte sou Mac la sèlman. Sou telefòn, enpòte fichye rezilta ou ekspòte sou Mac la.");
       }
     }
     setDraws([]);setLoaded(false);void read();
@@ -80,11 +82,15 @@ export default function AutomaticPanel({db,onCompare}:{db:Database;onCompare:(a:
   return <><section aria-labelledby="auto-title" className="space-y-4 rounded-2xl border border-gold-dim/40 bg-panel p-4">
     <h2 id="auto-title" className="font-num text-sm font-bold uppercase tracking-[0.2em] text-paper"><span className="text-gold">◆</span> Tchek otomatik</h2>
     <div className="flex flex-wrap gap-2">
-      <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>{manualTarget.current=false;setDraws([]);setLoaded(false);setState(e.target.value);setSession(lotteries.find(l=>l.code===e.target.value)?.sessions[0] ?? "midday");}}>{(lotteries.length?lotteries:[{code:"FL",name:"Florida",sessions:[]}]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select>
+      <select aria-label="Eta lotri" className={inputClass} value={state} onChange={e=>{manualTarget.current=false;setDraws([]);setLoaded(false);imported.current=null;setState(e.target.value);setSession(lotteries.find(l=>l.code===e.target.value)?.sessions[0] ?? "midday");}}>{(lotteries.length?lotteries:[{code:"FL",name:"Florida",sessions:[]}]).map(l=><option key={l.code} value={l.code}>{l.name}</option>)}</select>
       <input aria-label="Dat tchek otomatik" className={`${inputClass} min-w-0`} type="date" value={day} onChange={e=>{manualTarget.current=true;setDay(e.target.value);}}/>
       <select aria-label="Tiraj sib otomatik" className={inputClass} value={session} onChange={e=>{manualTarget.current=true;setSession(e.target.value);}}>{sessions.map(s=><option key={s} value={s}>{label(s)}</option>)}</select>
     </div>
-    <button className="text-sm text-gold underline" onClick={()=>setRefresh(x=>x+1)}>Rafrechi rezilta yo</button>
+    <button className="text-sm text-gold underline" onClick={()=>{imported.current=null;setRefresh(x=>x+1);}}>Rafrechi rezilta yo</button>
+    <div className="flex flex-wrap gap-3 text-sm text-gold">
+      {draws.length>0&&<button className="underline" onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify({draws})],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download=`tchek-${state}.json`;a.click();URL.revokeObjectURL(url);}}>Ekspòte rezilta</button>}
+      <label className="cursor-pointer underline">Enpòte rezilta<input aria-label="Enpòte rezilta" type="file" accept=".json,application/json" className="hidden" onChange={async e=>{const file=e.target.files?.[0];if(!file)return;try{const raw=JSON.parse(await file.text());const incoming=parseEngineFeed(raw,state);if(!incoming.length)throw new Error();imported.current=incoming;setDraws(incoming);setLoaded(true);setError("Rezilta enpòte · pa senkronize otomatikman.");}catch{setError("Fichye a pa valab pou lotri ou chwazi a.");}e.target.value="";}}/></label>
+    </div>
     {error && <p role="alert" className="text-sm text-gold">{error}</p>}
     {latest && <p className="text-xs text-mute">Dènye tiraj: <b>{latest.date} {label(latest.session)} · {drawLabel(latest)}</b></p>}
     {!valid && <p role="alert">Chwazi yon dat valab.</p>}
