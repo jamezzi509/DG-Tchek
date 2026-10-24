@@ -35,5 +35,5 @@ it('copies only selected favorites and the currently displayed BOX or STRAIGHT l
  expect(writeText).toHaveBeenLastCalledWith('222 227 277 777');
  fireEvent.click(screen.getByRole('button',{name:'3 Chif STRAIGHT'}));
  fireEvent.click(screen.getByRole('button',{name:/Kopye STRAIGHT/i}));
- expect(writeText).toHaveBeenLastCalledWith('222 227 277 722 727 777');
+ expect(writeText).toHaveBeenLastCalledWith('222 722 227 727 277 777');
 });

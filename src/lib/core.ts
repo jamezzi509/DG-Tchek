@@ -174,22 +174,27 @@ function pairsDoublesLast(common: Pair[]): [Pair, Pair][] {
   return [...withoutDouble, ...withDouble];
 }
 
-/** Generates the deduped Pick 3 and Pick 4 lists for a set of common numbers. */
-export function computePicksFromCommon(common: Pair[]): { pick3: string[]; pick4: string[] } {
-  const canonical = (n: string) => n.split("").sort().join("");
-  const followers = new Set(common.map(canonical));
-  const p3: string[] = [];
-  for (let a = 0; a <= 9; a++) for (let b = a; b <= 9; b++) for (let c = b; c <= 9; c++) {
-    const n = `${a}${b}${c}`;
-    const pairs = new Set([`${a}${b}`, `${a}${c}`, `${b}${c}`]);
-    const matches = [...pairs].filter(pair => followers.has(pair)).length;
-    if (matches >= 2 || (a === b && b === c && followers.has(`${a}${a}`))) p3.push(n);
-  }
+/** Generates Pick 3 from each common pair as the trailing two digits.
+ * Every distinct digit appearing in the common pairs can lead that pair.
+ * Keep the exact straight order and also provide its unordered BOX form.
+ */
+export function computePicksFromCommon(common: Pair[]): { pick3: string[]; pick3Straight: string[]; pick4: string[] } {
+  const seenPairs = new Set<string>();
+  const followers = common.filter(pair => {
+    const key = [pair, reversePair(pair)].sort()[0];
+    if (seenPairs.has(key)) return false;
+    seenPairs.add(key);
+    return true;
+  });
+  const digits = [...new Set(followers.flatMap(pair => [...pair]))];
+  const straight = dedupePreserveOrder(followers.flatMap(pair => digits.map(digit => digit + pair)));
+  const canonical = (n: string) => [...n].sort().join("");
+  const p3 = dedupePreserveOrder(straight.map(canonical));
   const p4: string[] = [];
   for (const [A, B] of pairsDoublesLast(common)) {
     p4.push(...generatePick4(A, B));
   }
-  return { pick3: dedupePreserveOrder(p3), pick4: dedupePreserveOrder(p4) };
+  return { pick3: p3, pick3Straight: straight, pick4: dedupePreserveOrder(p4) };
 }
 
 /**
