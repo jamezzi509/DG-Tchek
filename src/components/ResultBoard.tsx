@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { computePicksFromCommon, directedStraight } from "../lib/core";
+import { computePicksFromCommon } from "../lib/core";
 
 interface MinimalResult {
   common: string[];
@@ -49,7 +49,7 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
   useEffect(() => { setTab("box"); setFavorites([]); }, [result]);
 
   const boxes = favoritesOnly ? computePicksFromCommon(favorites).pick3 : result.pick3;
-  const activeCombos = tab === "box" ? boxes : directedStraight(favoritesOnly ? favorites : result.common);
+  const activeCombos = tab === "box" ? boxes : computePicksFromCommon(favoritesOnly ? favorites : result.common).pick3Straight;
   function toggleFavorite(n: string) {
     setFavorites(current => current.includes(n) ? current.filter(x => x !== n) : current.length < 3 ? [...current, n] : current);
   }

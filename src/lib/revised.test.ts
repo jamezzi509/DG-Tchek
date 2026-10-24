@@ -12,15 +12,23 @@ describe('Approved followers and BOX construction',()=>{
  it('36–66 produces the revised six and nine BOX including triples',()=>{
   const r=runDGTchek('36','66',buildDatabase().db);
   expect(r.common.map(canonical).sort()).toEqual(['22','27','45','47','57','77']);
-  expect(r.pick3).toEqual(['222','227','247','257','277','457','477','577','777']);
+  expect(r.pick3).toEqual(['222','227','224','225','277','247','257','245','457','445','455','477','447','577','557','777']);
  });
- it('02–00 gives the approved thirteen BOX, preserving 111 and 666',()=>{
-  expect(runDGTchek('02','00',buildDatabase().db).pick3).toEqual(['111','112','116','118','119','126','128','129','166','168','169','189','666']);
+ it('59–69 includes every exact trailing-pair Pick 3 straight, including 778',()=>{
+  const r=runDGTchek('59','69',buildDatabase().db);
+  expect(r.common).toEqual(['04','07','48','78']);
+  expect(computePicksFromCommon(r.common).pick3Straight).toEqual(['004','404','704','804','007','407','707','807','048','448','748','848','078','478','778','878']);
+  expect(computePicksFromCommon(r.common).pick3Straight).toContain('778');
+  expect(r.pick3).toContain('778');
+ });
+ it('02–00 preserves leading-zero and triple Pick 3 forms',()=>{
+  expect(runDGTchek('02','00',buildDatabase().db).pick3).toEqual(['111','112','116','118','119','122','126','128','129','166','168','169','188','189','199','266','666','668','669']);
  });
  it('requires two distinct pairs; repeated occurrences of one pair do not suffice',()=>{
-  expect(computePicksFromCommon(['12','21']).pick3).toEqual([]);
+  expect(computePicksFromCommon(['12','21']).pick3).toEqual(['112','122']);
   expect(computePicksFromCommon(['00']).pick3).toEqual(['000']);
-  expect(computePicksFromCommon(['01','02']).pick3).toEqual(['012']);
+  expect(computePicksFromCommon(['12','21']).pick3Straight).toEqual(['112','212']);
+  expect(computePicksFromCommon(['01','02']).pick3).toEqual(['001','011','012','002','022']);
  });
  it('retains deliberate custom overrides',()=>{
   localStorage.setItem('dgtchek:custom-seeds',JSON.stringify([{key:'00',list:['07']} ]));
