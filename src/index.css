@@ -73,3 +73,11 @@
   }
 }
 
+
+.workout-switch{display:inline-flex;align-items:center;gap:10px;color:#8f8f8f;font:700 12px "JetBrains Mono","IBM Plex Mono",ui-monospace,monospace;letter-spacing:.04em}
+.workout-switch .mode-active{color:#d4af37}
+.mode-toggle{position:relative;display:inline-block;flex-shrink:0;width:46px;height:26px;padding:3px;border:1px solid #3f3f3f;border-radius:999px;background:#171717;cursor:pointer}
+.mode-thumb{display:block;width:18px;height:18px;border-radius:50%;background:#d4af37;box-shadow:0 0 10px #d4af3726;transition:transform .18s}
+.mode-toggle[aria-checked="true"]{border-color:#9c1620;background:#301015}
+.mode-toggle[aria-checked="true"] .mode-thumb{transform:translateX(19px);background:#e51c2b;box-shadow:0 0 10px #e51c2b40}
+.mode-toggle:focus-visible{outline:2px solid #d4af37;outline-offset:4px}
