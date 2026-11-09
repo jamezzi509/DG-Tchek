@@ -101,7 +101,13 @@ export default function App() {
       </div>
 
       <div className="mx-auto flex max-w-md flex-col gap-6 px-4 pb-10 pt-6 sm:max-w-lg">
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between gap-3">
+          <a
+            href="/lad/"
+            className="rounded-lg border border-gold-dim px-3 py-1.5 text-xs font-bold text-gold transition hover:border-gold hover:text-paper"
+          >
+            LAD Workout →
+          </a>
           <button
             onClick={() => setView(view === "checker" ? "admin" : "checker")}
             className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-mute transition hover:border-red hover:text-red"
