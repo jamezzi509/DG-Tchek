@@ -3,8 +3,6 @@ import { computePicksFromCommon } from "../lib/core";
 
 interface MinimalResult {
   common: string[];
-  pick3: string[];
-  pick4: string[];
 }
 
 function useCopy(): [boolean, (text: string) => void] {
@@ -39,17 +37,16 @@ function ComboChip({ value }: { value: string }) {
 }
 
 export default function ResultBoard({ result }: { result: MinimalResult }) {
-  const [tab, setTab] = useState<"box" | "straight">("box");
   const [favorites, setFavorites] = useState<string[]>([]);
   const favoritesOnly = favorites.length > 0;
   const [copiedCommon, copyCommon] = useCopy();
   const [copiedCombo, copyCombo] = useCopy();
 
-  // Reset to the 3-digit tab whenever a fresh comparison comes in.
-  useEffect(() => { setTab("box"); setFavorites([]); }, [result]);
+  useEffect(() => { setFavorites([]); }, [result]);
 
-  const boxes = favoritesOnly ? computePicksFromCommon(favorites).pick3 : result.pick3;
-  const activeCombos = tab === "box" ? boxes : computePicksFromCommon(favoritesOnly ? favorites : result.common).pick3Straight;
+  const selectedNumbers = favoritesOnly ? favorites : result.common;
+  const activeCombos = computePicksFromCommon(selectedNumbers).pick3Straight;
+
   function toggleFavorite(n: string) {
     setFavorites(current => current.includes(n) ? current.filter(x => x !== n) : current.length < 3 ? [...current, n] : current);
   }
@@ -71,9 +68,9 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
                 <CommonBall key={`${n}-${i}`} value={n} selected={favorites.includes(n)} disabled={favorites.length === 3 && !favorites.includes(n)} onClick={() => toggleFavorite(n)} />
               ))}
             </div>
-            <p className="mt-3 text-center text-xs text-mute">Peze sou boul yo pou chwazi 3 favori ({favorites.length}/3).</p>
+            <p className="mt-3 text-center text-xs text-mute">Peze sou boul yo pou chwazi jiska 3 favori ({favorites.length}/3).</p>
             <button
-              onClick={() => copyCommon((favoritesOnly ? favorites : result.common).join(" "))}
+              onClick={() => copyCommon(selectedNumbers.join(" "))}
               className="mx-auto mt-4 flex items-center gap-2 rounded-full border border-gold-dim/60 px-5 py-2 text-xs font-bold uppercase tracking-wide text-gold transition hover:border-gold hover:bg-gold/10 active:scale-95"
             >
               {copiedCommon ? "Kopye ✓" : favoritesOnly ? "⧉ Kopye favori yo" : "⧉ Kopye boul yo"}
@@ -84,42 +81,26 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
         )}
       </div>
 
-      {/* BOX choices and their distinct exact orders */}
-      {(result.pick3.length > 0) && (
+      {/* 3-digit straight combinations from the common pairs */}
+      {result.common.length > 0 && (
         <div className="rounded-2xl border border-gold-dim/40 bg-panel p-5">
           <div className="mb-4 flex items-center justify-center gap-2">
             <span className="text-xl">🎯</span>
-            <span className="font-num text-base font-bold uppercase tracking-widest text-gold">3 Chif</span>
+            <span className="font-num text-base font-bold uppercase tracking-widest text-gold">3 Chif Straight</span>
           </div>
 
-          {favoritesOnly && <div className="mb-4 flex items-center justify-between gap-2 text-xs text-gold">
-            <span>3 chif ak favori yo: {favorites.join(" · ")}</span>
-            <button type="button" className="underline" onClick={() => setFavorites([])}>Wè tout</button>
-          </div>}
-          <div className="mb-4 flex gap-2">
-            <button
-              onClick={() => setTab("box")}
-              className={`flex-1 rounded-full py-2.5 text-sm font-bold uppercase tracking-wide transition ${
-                tab === "box" ? "bg-red text-white" : "border border-line text-mute hover:border-gold-dim hover:text-paper"
-              }`}
-            >
-              3 Chif BOX
-            </button>
-            <button
-              onClick={() => setTab("straight")}
-              className={`flex-1 rounded-full py-2.5 text-sm font-bold uppercase tracking-wide transition ${
-                tab === "straight" ? "bg-red text-white" : "border border-line text-mute hover:border-gold-dim hover:text-paper"
-              }`}
-            >
-              3 Chif STRAIGHT
-            </button>
-          </div>
+          {favoritesOnly && (
+            <div className="mb-4 flex items-center justify-between gap-2 text-xs text-gold">
+              <span>3 chif ak favori yo: {favorites.join(" · ")}</span>
+              <button type="button" className="underline" onClick={() => setFavorites([])}>Wè tout</button>
+            </div>
+          )}
 
           <p className="mb-3 font-num text-[11px] uppercase tracking-widest text-mute">
-            3 Chif {tab.toUpperCase()} <span className="text-line-bright">({activeCombos.length})</span>
+            3 Chif Straight <span className="text-line-bright">({activeCombos.length})</span>
           </p>
 
-          {activeCombos.length === 0 && <p className="mb-3 text-sm text-mute">Pa gen 3 chif pou chwa sa a. Chwazi boul ki ka fòme omwen 2 pè diferan, oswa yon doub pou trip li.</p>}
+          {activeCombos.length === 0 && <p className="mb-3 text-sm text-mute">Pa gen 3 chif pou chwa sa a.</p>}
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
             {activeCombos.map((n, i) => (
               <ComboChip key={`${n}-${i}`} value={n} />
@@ -130,7 +111,7 @@ export default function ResultBoard({ result }: { result: MinimalResult }) {
             onClick={() => copyCombo(activeCombos.join(" "))}
             className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-gold-dim/60 py-2.5 text-xs font-bold uppercase tracking-wide text-gold transition hover:border-gold hover:bg-gold/10 active:scale-95"
           >
-            {copiedCombo ? "Kopye ✓" : `⧉ Kopye ${tab.toUpperCase()}`}
+            {copiedCombo ? "Kopye ✓" : "⧉ Kopye Straight"}
           </button>
         </div>
       )}
