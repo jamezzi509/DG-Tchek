@@ -20,11 +20,11 @@ let compareLists={common:[],straight:[]};
 function reversePair(pair){return pair[1]+pair[0]}
 function resolveWorkout(number){const reverse=reversePair(number);const key=workouts[number]?number:reverse;return workouts[key]??null}
 function compareWorkouts(a,b){const left=unique([...a.pairs,...a.extra]);const right=unique([...b.pairs,...b.extra]);const seen=new Set();const common=left.filter(pair=>{const mirror=reversePair(pair);const key=[pair,mirror].sort()[0];if(seen.has(key)||!right.some(other=>other===pair||other===mirror))return false;seen.add(key);return true});const digits=unique(common.flatMap(pair=>[...pair]));const straight=unique(common.flatMap(pair=>digits.map(digit=>digit+pair)));return{common,straight}}
-function renderComparison(){const a=el('compare-a').value.trim();const b=el('compare-b').value.trim();const status=el('compare-status');const cards=el('compare-cards');if(!/^\\d{2}$/.test(a)||!/^\\d{2}$/.test(b)){compareLists={common:[],straight:[]};cards.hidden=true;status.textContent=(a||b)?'Antre 2 boul, chak youn ak 2 chif.':'';return}const wa=resolveWorkout(a),wb=resolveWorkout(b);if(!wa||!wb){compareLists={common:[],straight:[]};cards.hidden=true;status.textContent='Pa jwenn modèl pou youn nan boul sa yo.';return}compareLists=compareWorkouts(wa,wb);status.textContent='';cards.hidden=false;const common=compareLists.common,straight=compareLists.straight;cards.innerHTML='<article class="card"><div class="top"><h2>Boul komen</h2><button type="button" data-copy="common" '+(common.length?'':'disabled')+'>Kopye</button></div><p class="count">'+common.length+' boul</p><textarea readonly aria-label="Boul komen" id="compare-common" '+(common.length?'':'placeholder="Pa gen rezilta."')+'></textarea></article><article class="card"><div class="top"><h2>3 chif straight</h2><button type="button" data-copy="comparisonStraight" '+(straight.length?'':'disabled')+'>Kopye</button></div><p class="count">'+straight.length+' konbinezon</p><textarea readonly aria-label="3 chif straight" id="compare-comparisonStraight" '+(straight.length?'':'placeholder="Pa gen rezilta."')+'></textarea></article>';el('compare-common').value=joined(common);el('compare-comparisonStraight').value=joined(straight)}
+function renderComparison(){const a=el('compare-a').value.trim();const b=el('compare-b').value.trim();const status=el('compare-status');const cards=el('compare-cards');if(!/^\d{2}$/.test(a)||!/^\d{2}$/.test(b)){compareLists={common:[],straight:[]};cards.hidden=true;status.textContent=(a||b)?'Antre 2 boul, chak youn ak 2 chif.':'';return}const wa=resolveWorkout(a),wb=resolveWorkout(b);if(!wa||!wb){compareLists={common:[],straight:[]};cards.hidden=true;status.textContent='Pa jwenn modèl pou youn nan boul sa yo.';return}compareLists=compareWorkouts(wa,wb);status.textContent='';cards.hidden=false;const common=compareLists.common,straight=compareLists.straight;cards.innerHTML='<article class="card"><div class="top"><h2>Boul komen</h2><button type="button" data-copy="common" '+(common.length?'':'disabled')+'>Kopye</button></div><p class="count">'+common.length+' boul</p><textarea readonly aria-label="Boul komen" id="compare-common" '+(common.length?'':'placeholder="Pa gen rezilta."')+'></textarea></article><article class="card"><div class="top"><h2>3 chif straight</h2><button type="button" data-copy="comparisonStraight" '+(straight.length?'':'disabled')+'>Kopye</button></div><p class="count">'+straight.length+' konbinezon</p><textarea readonly aria-label="3 chif straight" id="compare-comparisonStraight" '+(straight.length?'':'placeholder="Pa gen rezilta."')+'></textarea></article>';el('compare-common').value=joined(common);el('compare-comparisonStraight').value=joined(straight)}
 function render(){
  const number=el('number').value.trim();
  el('heading').textContent='';
- if(!/^\\d{2}$/.test(number)){
+ if(!/^\d{2}$/.test(number)){
   el('status').textContent=number?'Rantre 2 chif pou wè rezilta yo.':'';
   el('results').hidden=true;lists={};return;
  }
@@ -61,11 +61,11 @@ async function copy(key,button){
 }
 el('form').addEventListener('submit',e=>{e.preventDefault();render()});
 el('number').addEventListener('input',()=>{
- el('number').value=el('number').value.replace(/\\D/g,'').slice(0,2);render();
+ el('number').value=el('number').value.replace(/\D/g,'').slice(0,2);render();
 });
 el('format').addEventListener('change',()=>{render();if(el('compare-a').value&&el('compare-b').value)renderComparison()});
 el('compare-form').addEventListener('submit',e=>{e.preventDefault();renderComparison()});
-for(const id of ['compare-a','compare-b'])el(id).addEventListener('input',()=>{el(id).value=el(id).value.replace(/\\D/g,'').slice(0,2);if(el('compare-a').value.length===2&&el('compare-b').value.length===2)renderComparison()});
+for(const id of ['compare-a','compare-b'])el(id).addEventListener('input',()=>{el(id).value=el(id).value.replace(/\D/g,'').slice(0,2);if(el('compare-a').value.length===2&&el('compare-b').value.length===2)renderComparison()});
 document.addEventListener('click',e=>{
  const button=e.target.closest('button[data-copy]');
  if(button&&!button.disabled)copy(button.dataset.copy,button);
